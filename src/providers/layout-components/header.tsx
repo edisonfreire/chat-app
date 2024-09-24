@@ -5,20 +5,22 @@ import { Avatar, message } from 'antd';
 import { UserType } from '@/interfaces';
 import CurrentUserInfo from './current-user-info';
 import { usePathname } from 'next/navigation';
+import { useDispatch, useSelector } from 'react-redux';
+import { SetCurrentUser, UserState } from '@/redux/userSlice';
 
 function Header() {
   const pathname = usePathname();
   const isPublicRoute = pathname.includes('sign-in') || pathname.includes('sign-up');
   if (isPublicRoute) return null;
-
-  const [currentUser, setCurrentUser] = React.useState<UserType | null>(null);
+  const dispatch = useDispatch();
+  const {currentUserData}: UserState = useSelector((state: any) => state.user);
   const [showCurrentUserInfo, setShowCurrentUserInfo] = React.useState<boolean>(false);
 
   const getCurrentUser = async () => {
     try {
       const response = await GetCurrentUserFromMongoDB();
       if (response.error) throw new Error(response.error);
-      setCurrentUser(response);
+      dispatch(SetCurrentUser(response as UserType));
     } catch (error: any) {
       message.error(error.message);
     }
@@ -34,16 +36,15 @@ function Header() {
         <h1 className='text-2xl font-bold text-primary uppercase'>Chatster</h1>
       </div>
       <div className='gap-5 flex items-center'>
-        <span className='text-sm'>{currentUser?.name}</span>
+        <span className='text-sm'>{currentUserData?.name}</span>
         <Avatar className="cursor-pointer"
           onClick={() => setShowCurrentUserInfo(true)}
-          src={currentUser?.profilePicture}
+          src={currentUserData?.profilePicture}
         />
       </div>
 
       {showCurrentUserInfo && (
         <CurrentUserInfo
-          currentUser={currentUser}
           showCurrentUserInfo={showCurrentUserInfo}
           setShowCurrentUserInfo={setShowCurrentUserInfo}
         />
