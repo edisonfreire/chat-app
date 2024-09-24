@@ -33,7 +33,7 @@ const chatSchema = new mongoose.Schema({
     type: [mongoose.Schema.Types.ObjectId],
     ref: "users",
   },
-  unreadCount: {
+  unreadCounts: {
     type: Object, // { userId: count } for groups
     default: {},
   },
