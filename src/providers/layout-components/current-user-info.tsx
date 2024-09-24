@@ -3,9 +3,10 @@ import React, { useState } from 'react'
 import dayjs from 'dayjs';
 import { useClerk } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { useSelector } from 'react-redux';
-import { UserState } from '@/redux/userSlice';
-import { on } from 'events';
+import { useDispatch, useSelector } from 'react-redux';
+import { SetCurrentUser, UserState } from '@/redux/userSlice';
+import { UploadImageToFirebaseAndReturnUrl } from '@/helpers/image-upload';
+import { UpdateUserProfile } from '@/server-actions/users';
 
 function CurrentUserInfo({
   showCurrentUserInfo,
@@ -14,11 +15,13 @@ function CurrentUserInfo({
   showCurrentUserInfo: boolean;
   setShowCurrentUserInfo: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  const [loading, setLoading] = useState<boolean>(false);
-  const {currentUserData}: UserState = useSelector((state: any) => state.user);
+  const [logOutLoading, setLogOutLoading] = useState<boolean>(false);
+  const [uploadLoading, setUploadLoading] = useState<boolean>(false);
+  const { currentUserData }: UserState = useSelector((state: any) => state.user);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { signOut } = useClerk();
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const getProperty = (key: string, value: string) => {
     return (
@@ -31,7 +34,7 @@ function CurrentUserInfo({
 
   const onLogout = async () => {
     try {
-      setLoading(true);
+      setLogOutLoading(true);
       await signOut();
       setShowCurrentUserInfo(false);
       message.success('Logged out successfully');
@@ -39,11 +42,26 @@ function CurrentUserInfo({
     } catch (error: any) {
       message.error(error.message);
     } finally {
-      setLoading(false);
+      setLogOutLoading(false);
     }
   }
 
-  const onProfilePictureUpdate = async () => { }
+  const onProfilePictureUpdate = async () => {
+    try {
+      setUploadLoading(true);
+      const url = await UploadImageToFirebaseAndReturnUrl(selectedFile!);
+      const response = await UpdateUserProfile(currentUserData?._id!, { profilePicture: url });
+      if (response.error) throw new Error(response.error);
+      dispatch(SetCurrentUser(response));
+      message.success('Profile picture updated successfully');
+      setShowCurrentUserInfo(false);
+    } catch (error: any) {
+      message.error(error.message);
+    } finally {
+      setUploadLoading(false);
+      setSelectedFile(null);
+    }
+  }
 
 
   return (
@@ -70,10 +88,10 @@ function CurrentUserInfo({
                 return false;
               }}
               className='cursor-pointer'
-              listType={selectedFile ? 'picture-circle': 'text'}
+              listType={selectedFile ? 'picture-circle' : 'text'}
               maxCount={1}
             >
-            Change Profile Picture
+              Change Profile Picture
             </Upload>
           </div>
 
@@ -87,10 +105,10 @@ function CurrentUserInfo({
           </div>
 
           <div className='mt-5 flex flex-col gap-5'>
-          <Button
+            <Button
               className='w-full'
               block
-              loading={loading}
+              loading={uploadLoading}
               onClick={onProfilePictureUpdate}
               disabled={!selectedFile}
             >
@@ -99,7 +117,7 @@ function CurrentUserInfo({
             <Button
               className='w-full'
               block
-              loading={loading}
+              loading={logOutLoading}
               onClick={onLogout}
             >
               Log Out
