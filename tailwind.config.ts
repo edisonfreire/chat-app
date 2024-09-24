@@ -9,11 +9,13 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        primary: "#31304D",
       },
     },
   },
   plugins: [],
+  corePlugins: {
+    preflight: false, // dont overlap with third-party lib
+  },
 };
 export default config;
