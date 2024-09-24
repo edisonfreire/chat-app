@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
   },
-  profilePic: {
+  profilePicture: {
     type: String,
     required: false,
   },
