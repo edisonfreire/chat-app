@@ -1,4 +1,3 @@
-import { UserType } from '@/interfaces'
 import { Button, Divider, Drawer, message } from 'antd';
 import React, { useState } from 'react'
 import dayjs from 'dayjs';
