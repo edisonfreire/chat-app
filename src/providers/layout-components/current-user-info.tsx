@@ -4,17 +4,18 @@ import React, { useState } from 'react'
 import dayjs from 'dayjs';
 import { useClerk } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
+import { useSelector } from 'react-redux';
+import { UserState } from '@/redux/userSlice';
 
 function CurrentUserInfo({
-  currentUser,
   showCurrentUserInfo,
   setShowCurrentUserInfo
 }: {
-  currentUser: UserType | null;
   showCurrentUserInfo: boolean;
   setShowCurrentUserInfo: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [loading, setLoading] = useState<boolean>(false);
+  const {currentUserData}: UserState = useSelector((state: any) => state.user);
   const { signOut } = useClerk();
   const router = useRouter();
 
@@ -47,11 +48,11 @@ function CurrentUserInfo({
       onClose={() => setShowCurrentUserInfo(false)}
       title="Profile"
     >
-      {currentUser &&
+      {currentUserData &&
         <div className="flex flex-col gap-5">
           <div className='flex flex-col gap-5 justify-center items-center'>
             <img
-              src={currentUser.profilePicture}
+              src={currentUserData.profilePicture}
               alt="Profile Picture"
               className='w-28 h-28 rounded-full'
             />
@@ -61,10 +62,10 @@ function CurrentUserInfo({
           <Divider className='my-1 border-gray-200' />
 
           <div className='flex flex-col gap-5'>
-            {getProperty('Name', currentUser.name)}
-            {getProperty('Username', currentUser.username)}
-            {getProperty('Id', currentUser._id)}
-            {getProperty('Joined on', dayjs(currentUser.createdAt).format('DD MMMM YYYY hh:mm A'))}
+            {getProperty('Name', currentUserData.name)}
+            {getProperty('Username', currentUserData.username)}
+            {getProperty('Id', currentUserData._id)}
+            {getProperty('Joined on', dayjs(currentUserData.createdAt).format('DD MMMM YYYY hh:mm A'))}
           </div>
 
           <div className='mt-5'>

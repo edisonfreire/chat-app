@@ -1,3 +1,4 @@
+import { UserType } from '@/interfaces';
 import { currentUser } from '@clerk/nextjs/server';
 import {createSlice} from '@reduxjs/toolkit';
 
@@ -20,3 +21,8 @@ const userSlice = createSlice({
 export const { SetCurrentUser, SetCurrentUserId } = userSlice.actions;
 
 export default userSlice;
+
+export interface UserState {
+  currentUserData: UserType | null;
+  currentUserId: string;
+}
