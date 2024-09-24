@@ -2,9 +2,12 @@
 import { GetCurrentUserFromMongoDB } from '@/server-actions/users';
 import React, { useEffect } from 'react'
 import { Avatar, message } from 'antd';
+import { UserType } from '@/interfaces';
+import CurrentUserInfo from './current-user-info';
 
 function Header() {
-  const [currentUser, setCurrentUser] = React.useState<any>(null);
+  const [currentUser, setCurrentUser] = React.useState<UserType | null>(null);
+  const [showCurrentUserInfo, setShowCurrentUserInfo] = React.useState<boolean>(false);
 
   const getCurrentUser = async () => {
     try {
@@ -18,7 +21,7 @@ function Header() {
 
   useEffect(() => {
     getCurrentUser();
-  } ,[]);
+  }, []);
 
   return (
     <div className='bg-gray-200 w-full px-5 py-2 flex justify-between items-center border-b border-solid border-gray-300'>
@@ -27,8 +30,19 @@ function Header() {
       </div>
       <div className='gap-5 flex items-center'>
         <span className='text-sm'>{currentUser?.name}</span>
-        <Avatar src={currentUser?.profilePicture} />
+        <Avatar className="cursor-pointer"
+          onClick={() => setShowCurrentUserInfo(true)}
+          src={currentUser?.profilePicture}
+        />
       </div>
+
+      {showCurrentUserInfo && (
+        <CurrentUserInfo
+          currentUser={currentUser}
+          showCurrentUserInfo={showCurrentUserInfo}
+          setShowCurrentUserInfo={setShowCurrentUserInfo}
+        />
+      )}
     </div>
   )
 }

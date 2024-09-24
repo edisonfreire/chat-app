@@ -16,6 +16,7 @@ html, body {
   font-family: 'Montserrat', sans-serif !important;
 }
 
+/* Hide the development mode text */
 .cl-internal-1dauvpw {
   display: none !important;
 }
