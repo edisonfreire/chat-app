@@ -1,10 +1,11 @@
-import { Button, Divider, Drawer, message } from 'antd';
+import { Button, Divider, Drawer, message, Upload } from 'antd';
 import React, { useState } from 'react'
 import dayjs from 'dayjs';
 import { useClerk } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { UserState } from '@/redux/userSlice';
+import { on } from 'events';
 
 function CurrentUserInfo({
   showCurrentUserInfo,
@@ -15,6 +16,7 @@ function CurrentUserInfo({
 }) {
   const [loading, setLoading] = useState<boolean>(false);
   const {currentUserData}: UserState = useSelector((state: any) => state.user);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { signOut } = useClerk();
   const router = useRouter();
 
@@ -41,6 +43,9 @@ function CurrentUserInfo({
     }
   }
 
+  const onProfilePictureUpdate = async () => { }
+
+
   return (
     <Drawer
       open={showCurrentUserInfo}
@@ -50,12 +55,26 @@ function CurrentUserInfo({
       {currentUserData &&
         <div className="flex flex-col gap-5">
           <div className='flex flex-col gap-5 justify-center items-center'>
-            <img
-              src={currentUserData.profilePicture}
+            {!selectedFile && <img
+              src={
+                selectedFile
+                  ? URL.createObjectURL(selectedFile)
+                  : currentUserData.profilePicture
+              }
               alt="Profile Picture"
               className='w-28 h-28 rounded-full'
-            />
-            <span className='text-gray-700 cursor-pointer'>Change Profile Picture</span>
+            />}
+            <Upload
+              beforeUpload={(file) => {
+                setSelectedFile(file);
+                return false;
+              }}
+              className='cursor-pointer'
+              listType={selectedFile ? 'picture-circle': 'text'}
+              maxCount={1}
+            >
+            Change Profile Picture
+            </Upload>
           </div>
 
           <Divider className='my-1 border-gray-200' />
@@ -67,7 +86,16 @@ function CurrentUserInfo({
             {getProperty('Joined on', dayjs(currentUserData.createdAt).format('DD MMMM YYYY hh:mm A'))}
           </div>
 
-          <div className='mt-5'>
+          <div className='mt-5 flex flex-col gap-5'>
+          <Button
+              className='w-full'
+              block
+              loading={loading}
+              onClick={onProfilePictureUpdate}
+              disabled={!selectedFile}
+            >
+              Update Profile Picture
+            </Button>
             <Button
               className='w-full'
               block
