@@ -31,6 +31,7 @@ function CurrentUserInfo({
     try {
       setLoading(true);
       await signOut();
+      setShowCurrentUserInfo(false);
       message.success('Logged out successfully');
       router.push('/sign-in');
     } catch (error: any) {

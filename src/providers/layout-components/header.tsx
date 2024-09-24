@@ -4,8 +4,13 @@ import React, { useEffect } from 'react'
 import { Avatar, message } from 'antd';
 import { UserType } from '@/interfaces';
 import CurrentUserInfo from './current-user-info';
+import { usePathname } from 'next/navigation';
 
 function Header() {
+  const pathname = usePathname();
+  const isPublicRoute = pathname.includes('sign-in') || pathname.includes('sign-up');
+  if (isPublicRoute) return null;
+
   const [currentUser, setCurrentUser] = React.useState<UserType | null>(null);
   const [showCurrentUserInfo, setShowCurrentUserInfo] = React.useState<boolean>(false);
 
