@@ -1,5 +1,4 @@
 "use client";
-
 import ChatArea from "./_chat-components/chat-area";
 import Chats from "./_chat-components/chats";
 import { Divider } from "antd";
