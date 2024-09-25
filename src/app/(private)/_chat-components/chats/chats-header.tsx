@@ -25,6 +25,7 @@ function ChatsHeader() {
           size='small'
           className='w-max'
           menu={{items}}
+          onClick={() => setShowNewChatModal(true)}
         >
           New Chat
         </Dropdown.Button>
