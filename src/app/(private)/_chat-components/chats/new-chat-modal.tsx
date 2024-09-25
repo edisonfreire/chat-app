@@ -1,5 +1,6 @@
 import { UserType } from '@/interfaces';
 import { UserState } from '@/redux/userSlice';
+import { CreateNewChat } from '@/server-actions/chats';
 import { GetAllUsers } from '@/server-actions/users';
 import { Button, Divider, message, Modal, Spin } from 'antd';
 import React, { useEffect, useState } from 'react'
@@ -9,15 +10,16 @@ function NewChatModal(
   {
     showNewChatModal,
     setShowNewChatModal,
-  } : {
+  }: {
     showNewChatModal: boolean;
     setShowNewChatModal: React.Dispatch<React.SetStateAction<boolean>>;
   }
 ) {
   const [users, setUsers] = useState<UserType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
-  const {currentUserData} : UserState = useSelector((state: any) => state.user);
+  const { currentUserData }: UserState = useSelector((state: any) => state.user);
 
   const getUsers = async () => {
     try {
@@ -26,7 +28,26 @@ function NewChatModal(
       if (response.error) throw new Error(response.error);
       console.log(response);
       setUsers(response);
-    } catch (error:any) {
+    } catch (error: any) {
+      message.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const onAddToChat = async (userId: string) => {
+    try {
+      setSelectedUserId(userId);
+      setLoading(true);
+      const response = await CreateNewChat({
+        users: [currentUserData?._id, userId],
+        createdBy: currentUserData?._id,
+        isGroupChat: false,
+      });
+      if (response.error) throw new Error(response.error);
+      message.success('Chat created successfully');
+      setShowNewChatModal(false);
+    } catch (error: any) {
       message.error(error.message);
     } finally {
       setLoading(false);
@@ -35,7 +56,7 @@ function NewChatModal(
 
   useEffect(() => {
     getUsers();
-  } ,[]);
+  }, []);
 
   return (
     <Modal
@@ -49,37 +70,40 @@ function NewChatModal(
         <h1 className="text-primary text-center text-xl font-bold uppercase">
           Create New Chat
         </h1>
-        {loading && (
+        {loading &&
+        !selectedUserId && (
           <div className="flex justify-center my-20">
             <Spin />
           </div>
         )}
 
-        {! loading && users.length > 0 && (
+        {!loading && users.length > 0 && (
           <div className="flex flex-col gap-5">
             {users.map((user) => {
               if (user._id === currentUserData?._id) return null;
 
               return (
                 <>
-                <div key={user._id}
-                  className='flex justify-between items-center'
-                >
-                  <div className="flex gap-5 items-center">
-                    <img src={user.profilePicture}
-                    alt='avatar'
-                    className='w-10 h-10 rounded-full'/>
-                    <span className='text-gray-500'>{user.name}</span>
-                  </div>
-                  <Button
-                    size='small'
+                  <div key={user._id}
+                    className='flex justify-between items-center'
                   >
-                    Add To Chat
-                  </Button>
-                </div>
-                <Divider 
-                  className='border-gray-200 my-[1px]'
-                />
+                    <div className="flex gap-5 items-center">
+                      <img src={user.profilePicture}
+                        alt='avatar'
+                        className='w-10 h-10 rounded-full' />
+                      <span className='text-gray-500'>{user.name}</span>
+                    </div>
+                    <Button
+                      loading={selectedUserId === user._id && loading}
+                      size='small'
+                      onClick={() => onAddToChat(user._id)}
+                    >
+                      Add To Chat
+                    </Button>
+                  </div>
+                  <Divider
+                    className='border-gray-200 my-[1px]'
+                  />
                 </>
               )
             })}
