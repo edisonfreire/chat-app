@@ -1,6 +1,7 @@
 "use server";
 import mongoose from "mongoose";
 import { UserModel, ChatModel, MessageModel } from "@/models";
+import path from "path";
 
 export const CreateNewChat = async (payload: any) => {
   try {
@@ -27,7 +28,14 @@ export const GetAllChats = async (userId: string) => {
         $in: [userId],
       },
     })
-      .populate("users").populate("lastMessage")
+      .populate("users")
+      .populate("lastMessage")
+      .populate({
+        path: "lastMessage",
+        populate: {
+          path: "sender",
+        },
+      })
       .sort({ updatedAt: -1 });
     return JSON.parse(JSON.stringify(users));
   } catch (error: any) {
