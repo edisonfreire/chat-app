@@ -22,10 +22,13 @@ export const GetAllChats = async (userId: string) => {
   try {
     // users is an array of strings so filter with $in
     const users = await ChatModel.find({
-      users: { 
+      users: {
         $in: [userId],
       },
-    }).populate("users").sort({ updatedAt: -1 }); // to have complete user information in users array
+    })
+      .populate("users")
+      .populate("lastMessage")
+      .sort({ updatedAt: -1 }); // to have complete user information in users array
     return JSON.parse(JSON.stringify(users));
   } catch (error: any) {
     return {
