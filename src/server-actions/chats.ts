@@ -1,5 +1,6 @@
 "use server";
-import ChatModel from "@/models/chat-model";
+import mongoose from "mongoose";
+import { UserModel, ChatModel, MessageModel } from "@/models";
 
 export const CreateNewChat = async (payload: any) => {
   try {
@@ -22,10 +23,12 @@ export const GetAllChats = async (userId: string) => {
   try {
     // users is an array of strings so filter with $in
     const users = await ChatModel.find({
-      users: { 
+      users: {
         $in: [userId],
       },
-    }).populate("users").sort({ updatedAt: -1 }); // to have complete user information in users array
+    })
+      .populate("users").populate("lastMessage")
+      .sort({ updatedAt: -1 });
     return JSON.parse(JSON.stringify(users));
   } catch (error: any) {
     return {

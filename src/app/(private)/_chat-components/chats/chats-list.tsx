@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { message, Spin } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { UserState } from '@/redux/userSlice';
 import { GetAllChats } from '@/server-actions/chats';
 import { ChatState, SetChats } from '@/redux/chatSlice';
 import ChatCard from './chat-card';
+
 
 function ChatsList() {
   const dispatch = useDispatch();
