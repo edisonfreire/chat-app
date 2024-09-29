@@ -1,6 +1,6 @@
 "use client";
 import { GetCurrentUserFromMongoDB } from '@/server-actions/users';
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Avatar, message } from 'antd';
 import { UserType } from '@/interfaces';
 import CurrentUserInfo from './current-user-info';
@@ -14,7 +14,7 @@ function Header() {
   if (isPublicRoute) return null;
   const dispatch = useDispatch();
   const {currentUserData}: UserState = useSelector((state: any) => state.user);
-  const [showCurrentUserInfo, setShowCurrentUserInfo] = React.useState<boolean>(false);
+  const [showCurrentUserInfo, setShowCurrentUserInfo] = useState<boolean>(false);
 
   const getCurrentUser = async () => {
     try {

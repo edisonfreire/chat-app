@@ -2,7 +2,6 @@
 import { connectMongoDB } from "@/config/db-config";
 import UserModel from "@/models/user-model";
 import { currentUser } from "@clerk/nextjs/server";
-import { profile } from "console";
 
 connectMongoDB();
 
@@ -40,10 +39,10 @@ export const GetCurrentUserFromMongoDB = async () => {
   }
 }
 
-export const GetAllUsers = async () => {
+export const UpdateUserProfile = async (userId: string, payload: any) => {
   try {
-    const allUsers = await UserModel.find({});
-    return JSON.parse(JSON.stringify(allUsers));
+    const updatedUser = await UserModel.findByIdAndUpdate(userId, payload, { new: true });
+    return JSON.parse(JSON.stringify(updatedUser));
   } catch (error: any) {
     return {
       error: error.message
@@ -51,10 +50,10 @@ export const GetAllUsers = async () => {
   }
 }
 
-export const UpdateUserProfile = async (userId: string, payload: any) => {
+export const GetAllUsers = async () => {
   try {
-    const updatedUser = await UserModel.findByIdAndUpdate(userId, payload, { new: true });
-    return JSON.parse(JSON.stringify(updatedUser));
+    const allUsers = await UserModel.find({});
+    return JSON.parse(JSON.stringify(allUsers));
   } catch (error: any) {
     return {
       error: error.message
