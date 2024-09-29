@@ -9,7 +9,7 @@ export default function Home() {
       <Chats />
       <Divider 
         type='vertical'
-        className="h-full border-gray-300"
+        className="h-full border-gray-300 px-0 mx-0"
       />
       <ChatArea />
     </div>
