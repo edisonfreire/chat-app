@@ -31,7 +31,7 @@ function ChatsHeader() {
         </Dropdown.Button>
       </div>
 
-      <input type='text' placeholder='Search chats...' className='bg-gray-100 w-full border border-gray-200 border-solid outline-none rounded-md px-3 h-14 focus:outline-none focus:border-primary ' />
+      <input type='text' placeholder='Search chats...' className='bg-blue-100/30 w-full border border-gray-200 border-solid outline-none rounded-md px-3 h-14 focus:outline-none focus:border-primary ' />
 
       {showNewChatModal && (
         <NewChatModal
