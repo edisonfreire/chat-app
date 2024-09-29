@@ -1,5 +1,6 @@
 "use server";
-import ChatModel from "@/models/chat-model";
+import mongoose from "mongoose";
+import { MessageModel, ChatModel } from "@/models";
 
 export const CreateNewChat = async (payload: any) => {
   try {

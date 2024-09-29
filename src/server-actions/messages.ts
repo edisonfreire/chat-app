@@ -1,7 +1,6 @@
 "use server";
+import { ChatModel, MessageModel } from "@/models";
 
-import MessageModel from "@/models/message-model";
-import ChatModel from "@/models/chat-model";
 
 export const SendNewMessage = async (payload: {
   text?: string,
@@ -16,6 +15,19 @@ export const SendNewMessage = async (payload: {
       lastMessage: newMessage._id,
     });
     return { message: "Message sent successfully" };
+  } catch (error: any) {
+    return {
+      error: error.message
+    };
+  }
+}
+
+export const GetChatMessages = async (chatId: string) => {
+  try {
+    const messages = await MessageModel.find({ chat: chatId })
+      .populate("sender")
+      .sort({ createdAt: 1 });
+    return JSON.parse(JSON.stringify(messages));
   } catch (error: any) {
     return {
       error: error.message
