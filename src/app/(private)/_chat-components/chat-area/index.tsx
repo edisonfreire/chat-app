@@ -2,6 +2,8 @@ import React from 'react'
 import RecepientCard from './recipient'
 import { ChatState } from '@/redux/chatSlice'
 import { useSelector } from 'react-redux'
+import NewMessage from './new-message';
+import Messages from './messages';
 
 // must have recipient, messages and send message components
 function ChatArea() {
@@ -18,8 +20,10 @@ function ChatArea() {
 
   return (
     selectedChat && (
-      <div className='flex-1'>
+      <div className='flex-1 flex flex-col justify-between'>
         <RecepientCard />
+        <Messages />
+        <NewMessage />
       </div>
     )
   )

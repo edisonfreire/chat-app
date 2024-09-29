@@ -5,7 +5,7 @@ import { Divider } from "antd";
 
 export default function Home() {
   return (
-    <div className='flex h-[85vh]'>
+    <div className='flex h-[89vh]'>
       <Chats />
       <Divider 
         type='vertical'
