@@ -1,3 +1,4 @@
+import { formatDateTime } from '@/helpers/date-formats';
 import { MessageType } from '@/interfaces';
 import { ChatState } from '@/redux/chatSlice';
 import dayjs from 'dayjs';
@@ -20,7 +21,7 @@ function Message({ message }: { message: MessageType }) {
             </p>
           </div>
           <span className='text-gray-500 text-xs'>
-            {dayjs(message.createdAt).format('DD/MM/YYYY HH:mm')}
+            {formatDateTime(message.createdAt)}
           </span>
         </div>
         <img src={message.sender.profilePicture} alt="avatar" className='w-8 h-8 rounded-full ml-2' />
@@ -40,7 +41,7 @@ function Message({ message }: { message: MessageType }) {
             </p>
           </div>
           <span className='text-gray-500 text-xs'>
-            {dayjs(message.createdAt).format('DD/MM/YYYY HH:mm')}
+            {formatDateTime(message.createdAt)}
           </span>
         </div>
       </div>
