@@ -1,4 +1,5 @@
 import { UserType } from '@/interfaces';
+import { ChatState } from '@/redux/chatSlice';
 import { UserState } from '@/redux/userSlice';
 import { CreateNewChat } from '@/server-actions/chats';
 import { GetAllUsers } from '@/server-actions/users';
@@ -20,6 +21,7 @@ function NewChatModal(
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
   const { currentUserData }: UserState = useSelector((state: any) => state.user);
+  const { chats }: ChatState = useSelector((state: any) => state.chat);
 
   const getUsers = async () => {
     try {
@@ -80,7 +82,9 @@ function NewChatModal(
         {!loading && users.length > 0 && (
           <div className="flex flex-col gap-5">
             {users.map((user) => {
-              if (user._id === currentUserData?._id) return null;
+              const chatAlreadyCreated = chats.find((chat) => chat.users.find((u) => u._id === user._id));
+              if (user._id === currentUserData?._id || chatAlreadyCreated
+              ) return null;
 
               return (
                 <>
