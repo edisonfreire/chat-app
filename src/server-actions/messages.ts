@@ -2,7 +2,6 @@
 
 import MessageModel from "@/models/message-model";
 import ChatModel from "@/models/chat-model";
-import { message } from "antd";
 
 export const SendNewMessage = async (payload: {
   text?: string,

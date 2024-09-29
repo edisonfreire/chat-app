@@ -30,4 +30,4 @@ function RecepientCard() {
   )
 }
 
-export default RecepientCard
+export default RecepientCard;
