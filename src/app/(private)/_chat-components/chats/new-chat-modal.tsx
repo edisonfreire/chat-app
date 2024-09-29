@@ -5,7 +5,8 @@ import { CreateNewChat } from '@/server-actions/chats';
 import { GetAllUsers } from '@/server-actions/users';
 import { Button, Divider, message, Modal, Spin } from 'antd';
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { SetChats } from '@/redux/chatSlice';
 
 function NewChatModal(
   {
@@ -22,6 +23,7 @@ function NewChatModal(
 
   const { currentUserData }: UserState = useSelector((state: any) => state.user);
   const { chats }: ChatState = useSelector((state: any) => state.chat);
+  const dispatch = useDispatch();
 
   const getUsers = async () => {
     try {
@@ -48,6 +50,7 @@ function NewChatModal(
       });
       if (response.error) throw new Error(response.error);
       message.success('Chat created successfully');
+      dispatch(SetChats(response));
       setShowNewChatModal(false);
     } catch (error: any) {
       message.error(error.message);
@@ -73,11 +76,11 @@ function NewChatModal(
           Create New Chat
         </h1>
         {loading &&
-        !selectedUserId && (
-          <div className="flex justify-center my-20">
-            <Spin />
-          </div>
-        )}
+          !selectedUserId && (
+            <div className="flex justify-center my-20">
+              <Spin />
+            </div>
+          )}
 
         {!loading && users.length > 0 && (
           <div className="flex flex-col gap-5">
@@ -87,9 +90,9 @@ function NewChatModal(
               ) return null;
 
               return (
-                <>
-                  <div key={user._id}
-                    className='flex justify-between items-center'
+                <div key={user._id}>
+                  <div
+                    className='flex justify-between items-center mb-3'
                   >
                     <div className="flex gap-5 items-center">
                       <img src={user.profilePicture}
@@ -108,7 +111,7 @@ function NewChatModal(
                   <Divider
                     className='border-gray-200 my-[1px]'
                   />
-                </>
+                </div>
               )
             })}
           </div>

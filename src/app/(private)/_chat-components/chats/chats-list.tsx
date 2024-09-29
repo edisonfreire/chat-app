@@ -3,11 +3,14 @@ import { message } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { UserState } from '@/redux/userSlice';
 import { GetAllChats } from '@/server-actions/chats';
-import { SetChats } from '@/redux/chatSlice';
+import { ChatState, SetChats } from '@/redux/chatSlice';
+import ChatCard from './chat-card';
 
 function ChatsList() {
   const dispatch = useDispatch();
   const { currentUserData }: UserState = useSelector((state: any) => state.user);
+  const { chats }: ChatState = useSelector((state: any) => state.chat);
+
   const [loading, setLoading] = useState<boolean>(false);
 
   const getChats = async () => {
@@ -26,10 +29,16 @@ function ChatsList() {
 
   useEffect(() => {
     getChats();
-  },[currentUserData]);
+  }, [currentUserData]);
 
   return (
-    <div>ChatsList</div>
+    <div>
+      <div className='flex flex-col gap-5 mt-5'>
+        {chats.map((chat) => {
+          return <ChatCard key={chat._id} chat={chat} />
+        })}
+      </div>
+    </div>
   )
 }
 
