@@ -46,3 +46,34 @@ export const GetChatMessages = async (chatId: string) => {
     };
   }
 }
+
+export const ReadAllMessages = async ({
+  chatId,
+  userId
+}: {
+  chatId: string,
+  userId: string
+}) => {
+  try {
+    // push user id to readBy array if it doesn't exist
+    await MessageModel.updateMany(
+      {
+        chat: chatId,
+        sender: { $ne: userId },
+        readBy: { $nin: userId }
+      },
+      { $addToSet: { readBy: userId } }
+    );
+
+    const existingChat = await ChatModel.findById(chatId);
+    const existingUnreadCounts = existingChat?.unreadCounts;
+    const newUnreadCounts = { ...existingUnreadCounts, [userId]: 0 };
+    await ChatModel.findByIdAndUpdate(chatId, { unreadCounts: newUnreadCounts });
+
+    return { message: "Messages marked as read" };
+  } catch (error: any) {
+    return {
+      error: error.message
+    };
+  }
+}

@@ -9,7 +9,7 @@ export const formatDateTime = (date: string) => {
   const messageDate = dayjs(date);
 
   if (now.diff(messageDate, 'minute') < 1) {
-    return 'just now';
+    return 'Just now';
   }
   if (now.diff(messageDate, 'day') < 1) {
     return messageDate.format('hh:mm A');
