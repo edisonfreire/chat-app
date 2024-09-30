@@ -1,7 +1,6 @@
 import { formatDateTime } from '@/helpers/date-formats';
 import { MessageType } from '@/interfaces';
 import { ChatState } from '@/redux/chatSlice';
-import dayjs from 'dayjs';
 import React from 'react'
 import { useSelector } from 'react-redux';
 

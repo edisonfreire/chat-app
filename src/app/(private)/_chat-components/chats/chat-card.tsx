@@ -3,6 +3,7 @@ import { ChatType } from '@/interfaces';
 import { useDispatch, useSelector } from 'react-redux';
 import { UserState } from '@/redux/userSlice';
 import { ChatState, SetSelectedChat } from '@/redux/chatSlice';
+import { formatDateTime } from '@/helpers/date-formats';
 
 function ChatCard({ chat }: { chat: ChatType }) {
   const dispatch = useDispatch();
@@ -24,7 +25,25 @@ function ChatCard({ chat }: { chat: ChatType }) {
     chatImage = recepient?.profilePicture!;
   }
 
+  if (chat.lastMessage) {
+    lastMessage = chat.lastMessage.text;
+    lastMessageSenderName = chat.lastMessage.sender._id === currentUserData?._id ? 'You: ' : chat.lastMessage.sender.name.split(' ')[0] + ": ";
+    lastMessageTime = formatDateTime(chat.lastMessage.createdAt);
+  }
+
   const isSelected = selectedChat?._id === chat._id;
+
+  const unreadCounts = () => {
+    if (!chat.unreadCounts || !chat.unreadCounts[currentUserData?._id!]) return null;
+
+    return (
+      <div className='bg-green-700 h-5 w-5 rounded-full flex justify-center items-center'>
+        <span className='text-white text-xs'>
+          {chat.unreadCounts[currentUserData?._id!]}
+        </span>
+      </div>
+    )
+  }
 
   return (
     <div
@@ -32,16 +51,27 @@ function ChatCard({ chat }: { chat: ChatType }) {
       onClick={() => dispatch(SetSelectedChat(chat))}
     >
       <div className='flex gap-5 items-center'>
-        <img src={chatImage} alt="" className='w-10 h-10 rounded-full' />
-        <span className='text-gray-700 text-sm'>
-          {chatName}
-        </span>
+        <img
+          src={chatImage}
+          alt=''
+          className='w-10 h-10 rounded-full' />
+        <div className='flex flex-col gap-1'>
+          <span className='text-gray-700 text-sm'>
+            {chatName}
+          </span>
+          <span className='text-gray-500 text-xs'>
+            {lastMessageSenderName} {lastMessage}
+          </span>
+        </div>
       </div>
 
       <div>
-        <span>{lastMessageTime}</span>
+        {unreadCounts()}
+        <span
+          className='text-gray-500 text-xs'
+        >{lastMessageTime}</span>
       </div>
-    </div>
+    </div >
   )
 }
 

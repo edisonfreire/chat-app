@@ -1,7 +1,7 @@
 import { UserState } from '@/redux/userSlice'
 import { ChatState } from '@/redux/chatSlice'
 import { Button, message } from 'antd'
-import React from 'react'
+import React, { useRef } from 'react'
 import { useSelector } from 'react-redux'
 import { SendNewMessage } from '@/server-actions/messages'
 
@@ -11,6 +11,7 @@ function NewMessage() {
   const { selectedChat }: ChatState = useSelector((state: any) => state.chat)
 
   const onSend = async () => {
+    if (!text) return;
     try {
       const dbPayload = {
         text,
@@ -38,6 +39,11 @@ function NewMessage() {
           className='w-full p-2 bg-white border border-solid border-gray-200 focus:outline-none focus:border-gray-500 h-[45px] px-5'
           value={text}
           onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              onSend();
+            }
+          }}
         />
       </div>
       <Button
