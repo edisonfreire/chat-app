@@ -54,4 +54,4 @@ function ChatsList() {
   )
 }
 
-export default ChatsList
+export default ChatsList;

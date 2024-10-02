@@ -1,10 +1,6 @@
 import dayjs from "dayjs";
 
 export const formatDateTime = (date: string) => {
-  // date is less than 1 min ago, return "just now"
-  // date is less than 1 hour ago, return "x minutes ago"
-  // date is less than 1 day ago, return "hh:mm A"
-  // date is more than 1 day ago, return "DD/MM/YYYY"
   const now = dayjs();
   const messageDate = dayjs(date);
 
