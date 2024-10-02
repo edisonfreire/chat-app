@@ -90,6 +90,7 @@ function CurrentUserInfo({
               className='cursor-pointer'
               listType={selectedFile ? 'picture-circle' : 'text'}
               maxCount={1}
+              accept='image/*'
             >
               Change Profile Picture
             </Upload>
