@@ -1,7 +1,8 @@
 import { formatDateTime } from '@/helpers/date-formats';
 import { ChatState } from '@/redux/chatSlice';
 import { UserState } from '@/redux/userSlice';
-import { Divider, Drawer } from 'antd';
+import { Button, Divider, Drawer } from 'antd';
+import { useRouter } from 'next/navigation';
 import React from 'react'
 import { useSelector } from 'react-redux';
 
@@ -12,6 +13,7 @@ function RecipientInfo({
   showRecipientInfo: boolean;
   setShowRecipientInfo: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+  const router = useRouter();
   const { currentUserData }: UserState = useSelector((state: any) => state.user);
   const { selectedChat }: ChatState = useSelector((state: any) => state.chat);
 
@@ -47,10 +49,37 @@ function RecipientInfo({
         <span className='text-gray-700'>{chatName}</span>
       </div>
 
+      {selectedChat?.isGroupChat && (
+        <>
+          <Divider className='my-3 border-gray-200' />
+          <div className="flex flex-col gap-5">
+            <div className="flex justify-between items-center">
+              <span className='text-gray-500 text-sm'>
+                {selectedChat.users.length} Members
+              </span>
+              <Button 
+              size='small'
+              onClick={() => router.push(`groups/edit-group/${selectedChat._id}`)}
+              >Edit Group</Button>
+            </div>
+            {selectedChat.users.map((user) => (
+              <div className='flex gap-5 items-center' key={user._id}>
+                <img
+                  src={user.profilePicture}
+                  alt=''
+                  className='w-8 h-8 rounded-full'
+                />
+                <span className='text-gray-700 text-sm'>{user.name}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
       <Divider className='my-3 border-gray-200' />
 
       <div className='flex flex-col gap-5'>
-        {getProperty('Created On', formatDateTime(selectedChat?.createdAt!))}
+        {getProperty('Created At', formatDateTime(selectedChat?.createdAt!))}
         {getProperty('Created By', selectedChat?.createdBy?.name!)}
       </div>
     </Drawer>

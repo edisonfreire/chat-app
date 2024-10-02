@@ -22,17 +22,17 @@ function RecepientCard() {
   }
 
   return (
-    <div className='flex justify-between py-3 px-5 border-0 border-b border-gray-200 border-solid bg-gray-400/5 cursor-pointer'
-      >
+    <div className='flex justify-between py-3 px-5 border-0 border-b border-gray-200 border-solid bg-gray-400/5'
+    >
       <div className="flex gap-5 items-center">
         <img src={chatImage} alt="" className='w-10 h-10 rounded-full' />
-        <span className='text-gray-700 text-sm'
-        onClick={() => setShowRecipientInfo(true)}
+        <span className='text-gray-700 text-sm cursor-pointer'
+          onClick={() => setShowRecipientInfo(true)}
         >{chatName}</span>
       </div>
 
       {showRecipientInfo && (
-        <RecipientInfo {... {showRecipientInfo, setShowRecipientInfo}} />
+        <RecipientInfo {... { showRecipientInfo, setShowRecipientInfo }} />
       )}
     </div>
   )

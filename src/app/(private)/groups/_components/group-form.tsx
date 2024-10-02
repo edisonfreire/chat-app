@@ -111,7 +111,7 @@ function GroupForm({ users }: { users: UserType[] }) {
             <Button disabled={loading} onClick={() => router.back()}>
               Cancel
             </Button>
-            <Button type='primary' htmlType='submit' loading={loading}>
+            <Button type='primary' htmlType='submit' loading={loading} disabled={selectedUserIds.length ===0}>
               Create Group
             </Button>
           </div>
