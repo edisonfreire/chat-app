@@ -1,16 +1,47 @@
 "use client";
+import { UploadImageToFirebaseAndReturnUrl } from '@/helpers/image-upload';
 import { UserType } from '@/interfaces';
 import { UserState } from '@/redux/userSlice';
-import { Button, Form, Input, Upload } from 'antd';
+import { CreateNewChat } from '@/server-actions/chats';
+import { Button, Form, Input, message, Upload } from 'antd';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux';
 
 function GroupForm({ users }: { users: UserType[] }) {
-  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const [selectedUserIds = [], setSelectedUserIds] = useState<string[]>([]);
   const [selectedProfilePicture, setSelectedProfilePicture] = useState<File>();
+  const [loading, setLoading] = useState<boolean>(false);
   const { currentUserData }: UserState = useSelector((state: any) => state.user);
+  const router = useRouter();
 
-  const onFinish = (values: any) => { };
+  const onFinish = async (values: any) => {
+    try {
+      setLoading(true);
+      const payload = {
+        groupName: values.groupName,
+        groupBio: values.groupDescription,
+        users: [...selectedUserIds, currentUserData?._id],
+        createdBy: currentUserData?._id,
+        isGroupChat: true,
+        groupProfilePicture: '',
+      }
+      if (selectedProfilePicture) {
+        // upload group profile picture
+        payload.groupProfilePicture = await UploadImageToFirebaseAndReturnUrl(selectedProfilePicture);
+      }
+
+      const response = await CreateNewChat(payload);
+      if (response.error) throw new Error(response.error);
+      message.success('Group created successfully');
+      router.refresh(); // avoid cache issues
+      router.push('/');
+    } catch (error: any) {
+      message.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className='grid grid-cols-2'>
@@ -77,10 +108,10 @@ function GroupForm({ users }: { users: UserType[] }) {
             >Upload Group Picture</span>
           </Upload>
           <div className="flex justify-end gap-5">
-            <Button>
+            <Button disabled={loading} onClick={() => router.back()}>
               Cancel
             </Button>
-            <Button type='primary' htmlType='submit'>
+            <Button type='primary' htmlType='submit' loading={loading}>
               Create Group
             </Button>
           </div>
