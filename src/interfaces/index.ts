@@ -19,6 +19,7 @@ export interface ChatType {
   groupProfilePicture: string;
   groupAdmins: UserType[];
   unreadCounts: Record<string, number>;
+  createdAt: string;
 }
 
 export interface MessageType {

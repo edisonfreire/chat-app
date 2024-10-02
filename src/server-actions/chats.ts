@@ -30,6 +30,7 @@ export const GetAllChats = async (userId: string) => {
     })
       .populate("users")
       .populate("lastMessage")
+      .populate("createdBy")
       .populate({
         path: "lastMessage",
         populate: {

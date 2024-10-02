@@ -9,12 +9,12 @@ import React, { useState } from 'react'
 import { useSelector } from 'react-redux';
 
 function GroupForm({ users }: { users: UserType[] }) {
+  const { currentUserData }: UserState = useSelector((state: any) => state.user);
+  const router = useRouter();
   const [selectedUserIds = [], setSelectedUserIds] = useState<string[]>([]);
   const [selectedProfilePicture, setSelectedProfilePicture] = useState<File>();
   const [loading, setLoading] = useState<boolean>(false);
-  const { currentUserData }: UserState = useSelector((state: any) => state.user);
-  const router = useRouter();
-
+  
   const onFinish = async (values: any) => {
     try {
       setLoading(true);
