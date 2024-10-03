@@ -1,5 +1,8 @@
 "use server";
-import { UserModel, ChatModel, MessageModel } from "@/models";
+
+import ChatModel from "@/models/chat-model";
+import MessageModel from "@/models/message-model";
+
 
 
 export const SendNewMessage = async (payload: {

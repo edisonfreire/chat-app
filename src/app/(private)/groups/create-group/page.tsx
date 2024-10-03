@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import React from 'react'
-import { UserModel, MessageModel, ChatModel } from '@/models'
 import GroupForm from '../_components/group-form'
 import { UserType } from '@/interfaces'
+import UserModel from '@/models/user-model'
 
 async function CreateGroupPage() {
   const users: UserType[] = await UserModel.find({})

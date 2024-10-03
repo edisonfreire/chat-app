@@ -1,5 +1,4 @@
 import { UserType } from '@/interfaces';
-import { currentUser } from '@clerk/nextjs/server';
 import {createSlice} from '@reduxjs/toolkit';
 
 const userSlice = createSlice({

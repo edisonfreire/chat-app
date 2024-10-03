@@ -2,19 +2,21 @@
 import { UploadImageToFirebaseAndReturnUrl } from '@/helpers/image-upload';
 import { UserType } from '@/interfaces';
 import { UserState } from '@/redux/userSlice';
-import { CreateNewChat } from '@/server-actions/chats';
+import { CreateNewChat, UpdateChat } from '@/server-actions/chats';
 import { Button, Form, Input, message, Upload } from 'antd';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux';
 
-function GroupForm({ users }: { users: UserType[] }) {
+function GroupForm({ users, initialData = null }: { users: UserType[], initialData?: any }) {
   const { currentUserData }: UserState = useSelector((state: any) => state.user);
   const router = useRouter();
-  const [selectedUserIds = [], setSelectedUserIds] = useState<string[]>([]);
+  const [selectedUserIds = [], setSelectedUserIds] = useState<string[]>(
+    initialData?.users.filter((userId:string) => userId !== currentUserData?._id!) || []
+  );
   const [selectedProfilePicture, setSelectedProfilePicture] = useState<File>();
   const [loading, setLoading] = useState<boolean>(false);
-  
+
   const onFinish = async (values: any) => {
     try {
       setLoading(true);
@@ -24,16 +26,24 @@ function GroupForm({ users }: { users: UserType[] }) {
         users: [...selectedUserIds, currentUserData?._id],
         createdBy: currentUserData?._id,
         isGroupChat: true,
-        groupProfilePicture: '',
+        groupProfilePicture: initialData?.groupProfilePicture || '',
       }
       if (selectedProfilePicture) {
         // upload group profile picture
         payload.groupProfilePicture = await UploadImageToFirebaseAndReturnUrl(selectedProfilePicture);
       }
 
-      const response = await CreateNewChat(payload);
+      let response: any = null;
+      if (initialData) {
+        response = await UpdateChat({
+          chatId: initialData._id,
+          payload: payload,
+        });
+      } else {
+        response = await CreateNewChat(payload);
+      }
       if (response.error) throw new Error(response.error);
-      message.success('Group created successfully');
+      message.success(initialData ? 'Group updated successfully' : 'Group created successfully');
       router.refresh(); // avoid cache issues
       router.push('/');
     } catch (error: any) {
@@ -82,6 +92,7 @@ function GroupForm({ users }: { users: UserType[] }) {
         <Form
           layout='vertical'
           onFinish={onFinish}
+          initialValues={initialData}
         >
           {/* name must match monogdb name */}
           <Form.Item
@@ -108,11 +119,11 @@ function GroupForm({ users }: { users: UserType[] }) {
             >Upload Group Picture</span>
           </Upload>
           <div className="flex justify-end gap-5">
-            <Button disabled={loading} onClick={() => router.back()}>
+            <Button disabled={loading} onClick={() => router.push('/')}>
               Cancel
             </Button>
-            <Button type='primary' htmlType='submit' loading={loading} disabled={selectedUserIds.length ===0}>
-              Create Group
+            <Button type='primary' htmlType='submit' loading={loading} disabled={selectedUserIds.length === 0}>
+              {initialData ? 'Update Group' : 'Create Group'}
             </Button>
           </div>
         </Form>
