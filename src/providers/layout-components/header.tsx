@@ -6,7 +6,7 @@ import { UserType } from '@/interfaces';
 import CurrentUserInfo from './current-user-info';
 import { usePathname } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
-import { SetCurrentUser, UserState } from '@/redux/userSlice';
+import { SetCurrentUser, SetOnlineUsers, UserState } from '@/redux/userSlice';
 import socket from '@/config/socket-config';
 
 function Header() {
@@ -34,12 +34,11 @@ function Header() {
   useEffect(() => {
     if (currentUserData) {
       socket.emit('join', currentUserData._id);
-    }
 
-    socket.on('testing', (data: any) => {
-      console.log(data);
-    });
-    
+      socket.on('online-users-updated', (onlineUsers: string[]) => {
+        dispatch(SetOnlineUsers(onlineUsers));
+      });
+    }
   }, [currentUserData]);
 
   return (
