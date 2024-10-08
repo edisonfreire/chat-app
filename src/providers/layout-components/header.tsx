@@ -7,13 +7,14 @@ import CurrentUserInfo from './current-user-info';
 import { usePathname } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { SetCurrentUser, UserState } from '@/redux/userSlice';
+import socket from '@/config/socket-config';
 
 function Header() {
   const pathname = usePathname();
   const isPublicRoute = pathname.includes('sign-in') || pathname.includes('sign-up');
   if (isPublicRoute) return null;
   const dispatch = useDispatch();
-  const {currentUserData}: UserState = useSelector((state: any) => state.user);
+  const { currentUserData }: UserState = useSelector((state: any) => state.user);
   const [showCurrentUserInfo, setShowCurrentUserInfo] = useState<boolean>(false);
 
   const getCurrentUser = async () => {
@@ -29,6 +30,12 @@ function Header() {
   useEffect(() => {
     getCurrentUser();
   }, []);
+
+  useEffect(() => {
+    if (currentUserData) {
+      socket.emit('join', currentUserData._id);
+    }
+  }, [currentUserData]);
 
   return (
     <div className='bg-gray-200 w-full px-5 py-2 flex justify-between items-center border-b border-solid border-gray-300'>
