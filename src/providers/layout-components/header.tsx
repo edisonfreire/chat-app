@@ -35,6 +35,11 @@ function Header() {
     if (currentUserData) {
       socket.emit('join', currentUserData._id);
     }
+
+    socket.on('testing', (data: any) => {
+      console.log(data);
+    });
+    
   }, [currentUserData]);
 
   return (
