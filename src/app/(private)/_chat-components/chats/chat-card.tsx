@@ -7,7 +7,7 @@ import { formatDateTime } from '@/helpers/date-formats';
 
 function ChatCard({ chat }: { chat: ChatType }) {
   const dispatch = useDispatch();
-  const { currentUserData }: UserState = useSelector((state: any) => state.user);
+  const { currentUserData, onlineUsers }: UserState = useSelector((state: any) => state.user);
   const { selectedChat }: ChatState = useSelector((state: any) => state.chat);
 
   let chatName = ''
@@ -45,6 +45,16 @@ function ChatCard({ chat }: { chat: ChatType }) {
     )
   }
 
+  const onlineIndicator = () => {
+    if (chat.isGroupChat) return null;
+    const recipientId = chat.users.find((user) => user._id !== currentUserData?._id)?._id;
+    if (onlineUsers.includes(recipientId!)) {
+      return (
+        <div className='bg-green-700 h-2 w-2 rounded-full' />
+      )
+    }
+  }
+
   return (
     <div
       className={`flex justify-between hover:bg-gray-100 py-3 px-2 rounded cursor-pointer ${isSelected ? 'bg-gray-100 border border-gray-300 border-solid' : ''}`}
@@ -56,8 +66,9 @@ function ChatCard({ chat }: { chat: ChatType }) {
           alt=''
           className='w-10 h-10 rounded-full' />
         <div className='flex flex-col gap-1'>
-          <span className='text-gray-700 text-sm'>
+          <span className='text-gray-700 text-sm flex gap-2 items-center'>
             {chatName}
+            {onlineIndicator()}
           </span>
           <span className='text-gray-500 text-xs'>
             {lastMessageSenderName} {lastMessage}
