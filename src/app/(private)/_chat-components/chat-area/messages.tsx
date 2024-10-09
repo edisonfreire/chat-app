@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
 import Message from './message';
 import { UserState } from '@/redux/userSlice';
+import socket from '@/config/socket-config';
 
 function Messages() {
   const [messages, setMessages] = useState<MessageType[]>([]);
@@ -20,7 +21,6 @@ function Messages() {
       if (response.error) {
         throw new Error(response.error);
       }
-      console.log(response);
       setMessages(response);
     } catch (error: any) {
       message.error(error.message);
@@ -33,6 +33,15 @@ function Messages() {
     getMessages();
     ReadAllMessages({ chatId: selectedChat?._id!, userId: currentUserData?._id! });
   } ,[selectedChat]);
+
+  useEffect(() => {
+    // listen for new messages
+    socket.on("new-message-recieved", (message: MessageType) => {
+      if (selectedChat?._id === message.chat._id) {
+        setMessages((prev) => [...prev, message]);
+      }
+    })
+  }, [selectedChat]);
 
   return (
     <div className='flex-1 p-3 overflow-y-scroll'>

@@ -10,24 +10,28 @@ export interface UserType {
 }
 
 export interface ChatType {
-  _id: string;
+  _id : string;
   users: UserType[];
   createdBy: UserType;
   lastMessage: MessageType;
   isGroupChat: boolean;
   groupName: string;
   groupProfilePicture: string;
+  groupBio: string;
   groupAdmins: UserType[];
-  unreadCounts: Record<string, number>;
+  unreadCounts: any;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface MessageType {
   _id: string;
-  chatId: ChatType;
+  socketMessageId: string;
+  chat: ChatType;
   sender: UserType;
   text: string;
   image: string;
-  readBy: UserType[];
+  readBy: any;
   createdAt: string;
   updatedAt: string;
 }

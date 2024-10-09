@@ -4,6 +4,7 @@ import { Button, message } from 'antd'
 import React, { useRef } from 'react'
 import { useSelector } from 'react-redux'
 import { SendNewMessage } from '@/server-actions/messages'
+import socket from '@/config/socket-config'
 
 function NewMessage() {
   const [text, setText] = React.useState('')
@@ -12,17 +13,32 @@ function NewMessage() {
 
   const onSend = async () => {
     if (!text) return;
+
     try {
-      const dbPayload = {
-        text,
+      const commonPayload = {
+        text, 
         image: '',
-        sender: currentUserData?._id!,
-        chat: selectedChat?._id!,
-      }
-      const response = await SendNewMessage(dbPayload);
-      if (response.error) throw new Error(response.error);
+      };
+
+      const socketPayload = {
+        ...commonPayload,
+        chat: selectedChat,
+        sender: currentUserData,
+      };
+
+      // send message using socket
+      socket.emit('send-new-message', socketPayload);
+      console.log(socketPayload);
+
+      // const dbPayload = {
+      //   ...commonPayload,
+      //   sender: currentUserData?._id!,
+      //   chat: selectedChat?._id!,
+      // };
+      // const response = await SendNewMessage(dbPayload);
+      // if (response.error) throw new Error(response.error);
       setText('');
-    } catch (error:any) {
+    } catch (error: any) {
       message.error(error.message)
     }
   }
