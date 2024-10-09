@@ -32,13 +32,12 @@ function NewMessage() {
       socket.emit('send-new-message', socketPayload);
       console.log(socketPayload);
 
-      // const dbPayload = {
-      //   ...commonPayload,
-      //   sender: currentUserData?._id!,
-      //   chat: selectedChat?._id!,
-      // };
-      // const response = await SendNewMessage(dbPayload);
-      // if (response.error) throw new Error(response.error);
+      const dbPayload = {
+        ...commonPayload,
+        sender: currentUserData?._id!,
+        chat: selectedChat?._id!,
+      };
+      SendNewMessage(dbPayload);
       setText('');
     } catch (error: any) {
       message.error(error.message)
