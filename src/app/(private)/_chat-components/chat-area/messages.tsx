@@ -38,7 +38,7 @@ function Messages() {
 
   useEffect(() => {
     // listen for new messages
-    socket.on("new-message-recieved", (message: MessageType) => {
+    socket.on("new-message-received", (message: MessageType) => {
       // have to use call backs to access sockets in state
       if (selectedChat?._id === message.chat._id) {
         setMessages((prev) => {

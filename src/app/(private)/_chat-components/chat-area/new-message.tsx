@@ -20,6 +20,9 @@ function NewMessage() {
         text, 
         image: '',
         socketMessageId: dayjs().unix(),
+        // real time purpose
+        createdAt: dayjs().toISOString(),
+        updatedAt: dayjs().toISOString(),
       };
 
       const socketPayload = {

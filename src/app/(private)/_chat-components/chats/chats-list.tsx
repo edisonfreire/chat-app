@@ -5,12 +5,16 @@ import { UserState } from '@/redux/userSlice';
 import { GetAllChats } from '@/server-actions/chats';
 import { ChatState, SetChats } from '@/redux/chatSlice';
 import ChatCard from './chat-card';
+import { MessageType } from '@/interfaces';
+import socket from '@/config/socket-config';
+import store from '@/redux/store';
 
 
 function ChatsList() {
   const dispatch = useDispatch();
   const { currentUserData }: UserState = useSelector((state: any) => state.user);
   const { chats }: ChatState = useSelector((state: any) => state.chat);
+  const { selectedChat }: ChatState = useSelector((state: any) => state.chat);
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -30,6 +34,26 @@ function ChatsList() {
   useEffect(() => {
     if (currentUserData) getChats();
   }, [currentUserData]);
+
+  useEffect(() => {
+    socket.on('new-message-received', (newMessage: MessageType)=> {
+      let {chats} : ChatState = store.getState().chat;
+      let prevChats = [...chats];
+      let chatIndex = prevChats.findIndex((chat) => chat._id === newMessage.chat._id);
+
+      if (chatIndex === -1) return;
+
+      let chatToUpdate = prevChats[chatIndex];
+      let chatToUpdateCopy = {...chatToUpdate};
+      chatToUpdateCopy.lastMessage = newMessage;
+      chatToUpdateCopy.updatedAt = newMessage.createdAt;
+      prevChats[chatIndex] = chatToUpdateCopy;
+
+      // push chat to the top
+      prevChats = [prevChats[chatIndex], ...prevChats.filter((chat) => chat._id !== newMessage.chat._id)];
+      dispatch(SetChats(prevChats));
+    })
+  }, [selectedChat]);
 
   return (
     <div>
