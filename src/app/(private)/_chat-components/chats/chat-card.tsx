@@ -25,10 +25,10 @@ function ChatCard({ chat }: { chat: ChatType }) {
     chatImage = recepient?.profilePicture!;
   }
 
-  if (chat.lastMessage) {
-    lastMessage = chat.lastMessage.text;
-    lastMessageSenderName = chat.lastMessage.sender._id === currentUserData?._id ? 'You: ' : chat.lastMessage.sender.name.split(' ')[0] + ": ";
-    lastMessageTime = formatDateTime(chat.lastMessage.createdAt);
+  if (chat?.lastMessage) {
+    lastMessage = chat?.lastMessage.text;
+    lastMessageSenderName = chat?.lastMessage.sender._id === currentUserData?._id ? 'You: ' : chat?.lastMessage.sender.name.split(' ')[0] + ": ";
+    lastMessageTime = formatDateTime(chat?.lastMessage.createdAt);
   }
 
   const isSelected = selectedChat?._id === chat._id;

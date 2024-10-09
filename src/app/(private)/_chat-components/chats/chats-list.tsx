@@ -44,10 +44,20 @@ function ChatsList() {
       if (chatIndex === -1) return;
 
       let chatToUpdate = prevChats[chatIndex];
+
+      if (chatToUpdate.lastMessage?.socketMessageId === newMessage.socketMessageId) return;
+
       let chatToUpdateCopy = {...chatToUpdate};
       chatToUpdateCopy.lastMessage = newMessage;
       chatToUpdateCopy.updatedAt = newMessage.createdAt;
       prevChats[chatIndex] = chatToUpdateCopy;
+      chatToUpdateCopy.unreadCounts = {...chatToUpdateCopy.unreadCounts};
+
+      if (newMessage.sender._id !== currentUserData?._id
+        && selectedChat?._id !== newMessage.chat._id
+      ) {
+        chatToUpdateCopy.unreadCounts[currentUserData?._id!] = (chatToUpdateCopy.unreadCounts[currentUserData?._id!] || 0) + 1;
+      }
 
       // push chat to the top
       prevChats = [prevChats[chatIndex], ...prevChats.filter((chat) => chat._id !== newMessage.chat._id)];
