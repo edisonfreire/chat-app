@@ -37,8 +37,13 @@ function Messages() {
   useEffect(() => {
     // listen for new messages
     socket.on("new-message-recieved", (message: MessageType) => {
+      // have to use call backs to access sockets in state
       if (selectedChat?._id === message.chat._id) {
-        setMessages((prev) => [...prev, message]);
+        setMessages((prev) => {
+          const isMessageAlreadyExists = prev.find((msg) => msg.socketMessageId === message.socketMessageId);
+          if (isMessageAlreadyExists) return prev;
+          else return [...prev, message];
+      });
       }
     })
   }, [selectedChat]);

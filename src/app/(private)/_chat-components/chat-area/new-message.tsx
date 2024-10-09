@@ -5,6 +5,7 @@ import React, { useRef } from 'react'
 import { useSelector } from 'react-redux'
 import { SendNewMessage } from '@/server-actions/messages'
 import socket from '@/config/socket-config'
+import dayjs from 'dayjs'
 
 function NewMessage() {
   const [text, setText] = React.useState('')
@@ -18,6 +19,7 @@ function NewMessage() {
       const commonPayload = {
         text, 
         image: '',
+        socketMessageId: dayjs().unix(),
       };
 
       const socketPayload = {
