@@ -48,11 +48,12 @@ function NewMessage() {
   }
 
   useEffect(() => {
-    socket.emit('typing', {
+    socket.emit("typing", {
       chat: selectedChat,
-      sender: currentUserData?._id,
+      senderId: currentUserData?._id!,
+      senderName: currentUserData?.name.split(" ")[0],
     });
-  }, [selectedChat, text]);
+  }, [text]); // selectedChat too
 
   return (
     <div className='p-3 bg-gray-100 border-0 border-t border-solid border-gray-200 flex gap-5'>
