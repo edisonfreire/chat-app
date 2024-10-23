@@ -7,8 +7,9 @@ import { useSelector } from 'react-redux'
 import RecipientInfo from './recipient-info';
 
 function RecepientCard() {
+  const [typing, setTyping] = useState<boolean>(false);
+  const [senderName = "", setSenderName] = React.useState<string>("");
   const [showRecipientInfo, setShowRecipientInfo] = useState<boolean>(false);
-  const [typing, setTyping] = useState(false);
   const { selectedChat }: ChatState = useSelector((state: any) => state.chat);
   const { currentUserData }: UserState = useSelector((state: any) => state.user);
 
@@ -25,27 +26,35 @@ function RecepientCard() {
   }
 
   const typingAnimation = () => {
-    if (typing) return (
-      <span className='text-green-700 font-semibold text-xs'>
-        Typing...
-      </span>
-    )
-  }
+    if (typing)
+      return (
+        <span className="text-green-700 font-semibold text-xs">
+          {selectedChat?.isGroupChat && `${senderName} Is `}
+          Typing...
+        </span>
+      );
+  };
 
   useEffect(() => {
-    socket.on('typing', (chat: ChatType) => {
-      if (selectedChat?._id === chat._id) {
-        setTyping(true);
-        
+    socket.on(
+      "typing",
+      ({ chat, senderName }: { chat: ChatType; senderName: string }) => {
+        if (selectedChat?._id === chat._id) {
+          setTyping(true);
+          if (chat.isGroupChat) {
+            setSenderName(senderName);
+          }
+        }
+
         setTimeout(() => {
           setTyping(false);
         }, 2000);
       }
-    });
+    );
 
     return () => {
-      socket.off('typing');
-    }
+      socket.off("typing");
+    };
   }, [selectedChat]);
 
   return (
@@ -53,10 +62,12 @@ function RecepientCard() {
     >
       <div className="flex gap-5 items-center">
         <img src={chatImage} alt="" className='w-10 h-10 rounded-full' />
-        <span className='text-gray-700 text-sm cursor-pointer'
-          onClick={() => setShowRecipientInfo(true)}
-        >{chatName}</span>
-        {typingAnimation()}
+        <div className='flex flex-col gap-1'>
+          <span className='text-gray-700 text-sm cursor-pointer'
+            onClick={() => setShowRecipientInfo(true)}
+          >{chatName}</span>
+          {typingAnimation()}
+        </div>
       </div>
 
       {showRecipientInfo && (
