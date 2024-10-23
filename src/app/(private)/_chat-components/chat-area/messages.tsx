@@ -40,15 +40,38 @@ function Messages() {
   useEffect(() => {
     // listen for new messages
     socket.on("new-message-received", (message: MessageType) => {
-      // have to use call backs to access sockets in state
       if (selectedChat?._id === message.chat._id) {
         setMessages((prev) => {
-          const isMessageAlreadyExists = prev.find((msg) => msg.socketMessageId === message.socketMessageId);
+          const isMessageAlreadyExists = prev.find(
+            (msg) => msg.socketMessageId === message.socketMessageId
+          );
           if (isMessageAlreadyExists) return prev;
           else return [...prev, message];
         });
       }
-    })
+    });
+
+    // listen for user-read-all-chat-messages event
+    socket.on(
+      "user-read-all-chat-messages",
+      ({ chatId, readByUserId }: { chatId: string; readByUserId: string }) => {
+        if (selectedChat?._id === chatId) {
+          setMessages((prev) => {
+            const newMessages = prev.map((msg) => {
+              if (
+                msg.sender._id !== readByUserId &&
+                !msg.readBy.includes(readByUserId)
+              ) {
+                return { ...msg, readBy: [...msg.readBy, readByUserId] };
+              }
+              return msg;
+            });
+
+            return newMessages;
+          });
+        }
+      }
+    );
   }, [selectedChat]);
 
   useEffect(() => {
@@ -56,10 +79,25 @@ function Messages() {
       messagesDivRef.current.scrollTop = messagesDivRef.current.scrollHeight + 100;
     }
 
-    ReadAllMessages({
-      chatId: selectedChat?._id!,
-      userId: currentUserData?._id!
-    });
+    let unreadMessaegs = 0;
+    let chat = chats.find((chat: any) => chat._id === selectedChat?._id);
+    if (chat) {
+      unreadMessaegs = chat.unreadCounts[currentUserData?._id!] || 0;
+    }
+
+    if (unreadMessaegs > 0) {
+      ReadAllMessages({
+        chatId: selectedChat?._id!,
+        userId: currentUserData?._id!
+      });
+
+      socket.emit('read-all-messages', {
+        chatId: selectedChat?._id!,
+        readyByUserId: currentUserData?._id!,
+        users: selectedChat?.users.filter((user) => user._id !== currentUserData?._id).map((user) => user._id)
+      });
+    }
+
     const newChats = chats.map((chat: any) => {
       if (chat._id === selectedChat?._id) {
         let chatData = { ...chat };
