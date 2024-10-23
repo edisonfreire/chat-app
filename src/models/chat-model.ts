@@ -37,6 +37,10 @@ const chatSchema = new mongoose.Schema({
     type: Object, // { userId: count } for groups
     default: {},
   },
+  lastMessageAt: {
+    type: String,
+    default: '',
+  },
 }, { timestamps: true });
 
 if (mongoose.models && mongoose.models["chats"]) {
