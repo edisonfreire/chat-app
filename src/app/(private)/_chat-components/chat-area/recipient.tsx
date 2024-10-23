@@ -29,8 +29,7 @@ function RecepientCard() {
     if (typing)
       return (
         <span className="text-green-700 font-semibold text-xs">
-          {selectedChat?.isGroupChat && `${senderName} Is `}
-          Typing...
+          {selectedChat?.isGroupChat ? `${senderName} is typing...` : "Typing..."}
         </span>
       );
   };
