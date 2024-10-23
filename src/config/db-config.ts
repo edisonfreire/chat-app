@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { UserModel, ChatModel, MessageModel } from "@/models";
 
 //  mongod --dbpath /usr/local/var/mongodb
 export const connectMongoDB = async () => {

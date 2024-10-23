@@ -34,7 +34,7 @@ function ChatCard({ chat }: { chat: ChatType }) {
   const isSelected = selectedChat?._id === chat._id;
 
   const unreadCounts = () => {
-    if (!chat.unreadCounts || !chat.unreadCounts[currentUserData?._id!]) return null;
+    if (!chat.unreadCounts || !chat.unreadCounts[currentUserData?._id!] || chat._id === selectedChat?._id) return null;
 
     return (
       <div className='bg-green-700 h-5 w-5 rounded-full flex justify-center items-center'>
