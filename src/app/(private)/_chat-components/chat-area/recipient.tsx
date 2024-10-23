@@ -4,8 +4,10 @@ import { ChatState } from '@/redux/chatSlice'
 import { UserState } from '@/redux/userSlice';
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
+import RecipientInfo from './recipient-info';
 
 function RecepientCard() {
+  const [showRecipientInfo, setShowRecipientInfo] = useState<boolean>(false);
   const [typing, setTyping] = useState(false);
   const { selectedChat }: ChatState = useSelector((state: any) => state.chat);
   const { currentUserData }: UserState = useSelector((state: any) => state.user);
@@ -47,14 +49,19 @@ function RecepientCard() {
   }, [selectedChat]);
 
   return (
-    <div className='flex justify-between py-3 px-5 border-0 border-b border-gray-200 border-solid bg-gray-400/5'>
+    <div className='flex justify-between py-3 px-5 border-0 border-b border-gray-200 border-solid bg-gray-400/5'
+    >
       <div className="flex gap-5 items-center">
         <img src={chatImage} alt="" className='w-10 h-10 rounded-full' />
-        <div className="flex flex-col gap-1">
-          <span className='text-gray-700 text-sm'>{chatName}</span>
-          {typingAnimation()}
-        </div>
+        <span className='text-gray-700 text-sm cursor-pointer'
+          onClick={() => setShowRecipientInfo(true)}
+        >{chatName}</span>
+        {typingAnimation()}
       </div>
+
+      {showRecipientInfo && (
+        <RecipientInfo {... { showRecipientInfo, setShowRecipientInfo }} />
+      )}
     </div>
   )
 }

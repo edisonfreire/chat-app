@@ -49,4 +49,9 @@ if (!mongoose.models["messages"]) {
 
 const ChatModel = mongoose.model("chats", chatSchema);
 
+// fix the error where the message model is not found
+if (!mongoose.models["messages"]) {
+  require("./message-model");
+}
+
 export default ChatModel;

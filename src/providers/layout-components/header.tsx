@@ -42,7 +42,7 @@ function Header() {
   }, [currentUserData]);
 
   return (
-    <div className='bg-gray-200 w-full px-5 py-2 flex justify-between items-center border-b border-solid border-gray-300'>
+    currentUserData && (<div className='bg-gray-200 w-full px-5 py-2 flex justify-between items-center border-b border-solid border-gray-300'>
       <div>
         <h1 className='text-2xl font-bold text-primary uppercase'>Chatster</h1>
       </div>
@@ -60,7 +60,7 @@ function Header() {
           setShowCurrentUserInfo={setShowCurrentUserInfo}
         />
       )}
-    </div>
+    </div>)
   )
 }
 
