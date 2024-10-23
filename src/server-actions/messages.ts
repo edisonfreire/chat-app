@@ -4,7 +4,6 @@ import ChatModel from "@/models/chat-model";
 import MessageModel from "@/models/message-model";
 
 
-
 export const SendNewMessage = async (payload: {
   text?: string,
   image?: string,

@@ -5,12 +5,16 @@ import { UserState } from '@/redux/userSlice';
 import { GetAllChats } from '@/server-actions/chats';
 import { ChatState, SetChats } from '@/redux/chatSlice';
 import ChatCard from './chat-card';
+import { MessageType } from '@/interfaces';
+import socket from '@/config/socket-config';
+import store from '@/redux/store';
 
 
 function ChatsList() {
   const dispatch = useDispatch();
   const { currentUserData }: UserState = useSelector((state: any) => state.user);
   const { chats }: ChatState = useSelector((state: any) => state.chat);
+  const { selectedChat }: ChatState = useSelector((state: any) => state.chat);
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -18,7 +22,6 @@ function ChatsList() {
     try {
       setLoading(true);
       const response = await GetAllChats(currentUserData?._id!);
-      console.log(response)
       if (response.error) throw new Error(response.error);
       dispatch(SetChats(response));
     } catch (error: any) {
@@ -31,6 +34,36 @@ function ChatsList() {
   useEffect(() => {
     if (currentUserData) getChats();
   }, [currentUserData]);
+
+  useEffect(() => {
+    socket.on('new-message-received', (newMessage: MessageType)=> {
+      let {chats} : ChatState = store.getState().chat;
+      let prevChats = [...chats];
+      let chatIndex = prevChats.findIndex((chat) => chat._id === newMessage.chat._id);
+
+      if (chatIndex === -1) return;
+
+      let chatToUpdate = prevChats[chatIndex];
+
+      if (chatToUpdate.lastMessage?.socketMessageId === newMessage.socketMessageId) return;
+
+      let chatToUpdateCopy = {...chatToUpdate};
+      chatToUpdateCopy.lastMessage = newMessage;
+      chatToUpdateCopy.updatedAt = newMessage.createdAt;
+      prevChats[chatIndex] = chatToUpdateCopy;
+      chatToUpdateCopy.unreadCounts = {...chatToUpdateCopy.unreadCounts};
+
+      if (newMessage.sender._id !== currentUserData?._id
+        && selectedChat?._id !== newMessage.chat._id
+      ) {
+        chatToUpdateCopy.unreadCounts[currentUserData?._id!] = (chatToUpdateCopy.unreadCounts[currentUserData?._id!] || 0) + 1;
+      }
+
+      // push chat to the top
+      prevChats = [prevChats[chatIndex], ...prevChats.filter((chat) => chat._id !== newMessage.chat._id)];
+      dispatch(SetChats(prevChats));
+    })
+  }, [selectedChat]);
 
   return (
     <div>

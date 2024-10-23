@@ -1,11 +1,14 @@
+import socket from '@/config/socket-config';
+import { ChatType } from '@/interfaces';
 import { ChatState } from '@/redux/chatSlice'
 import { UserState } from '@/redux/userSlice';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import RecipientInfo from './recipient-info';
 
 function RecepientCard() {
   const [showRecipientInfo, setShowRecipientInfo] = useState<boolean>(false);
+  const [typing, setTyping] = useState(false);
   const { selectedChat }: ChatState = useSelector((state: any) => state.chat);
   const { currentUserData }: UserState = useSelector((state: any) => state.user);
 
@@ -21,6 +24,30 @@ function RecepientCard() {
     chatImage = recipient?.profilePicture!;
   }
 
+  const typingAnimation = () => {
+    if (typing) return (
+      <span className='text-green-700 font-semibold text-xs'>
+        Typing...
+      </span>
+    )
+  }
+
+  useEffect(() => {
+    socket.on('typing', (chat: ChatType) => {
+      if (selectedChat?._id === chat._id) {
+        setTyping(true);
+        
+        setTimeout(() => {
+          setTyping(false);
+        }, 2000);
+      }
+    });
+
+    return () => {
+      socket.off('typing');
+    }
+  }, [selectedChat]);
+
   return (
     <div className='flex justify-between py-3 px-5 border-0 border-b border-gray-200 border-solid bg-gray-400/5'
     >
@@ -29,6 +56,7 @@ function RecepientCard() {
         <span className='text-gray-700 text-sm cursor-pointer'
           onClick={() => setShowRecipientInfo(true)}
         >{chatName}</span>
+        {typingAnimation()}
       </div>
 
       {showRecipientInfo && (

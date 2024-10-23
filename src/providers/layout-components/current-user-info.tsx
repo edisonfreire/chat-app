@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { SetCurrentUser, UserState } from '@/redux/userSlice';
 import { UploadImageToFirebaseAndReturnUrl } from '@/helpers/image-upload';
 import { UpdateUserProfile } from '@/server-actions/users';
+import socket from '@/config/socket-config';
 
 function CurrentUserInfo({
   showCurrentUserInfo,
@@ -35,6 +36,7 @@ function CurrentUserInfo({
   const onLogout = async () => {
     try {
       setLogOutLoading(true);
+      socket.emit('logout', currentUserData?._id);
       await signOut();
       setShowCurrentUserInfo(false);
       message.success('Logged out successfully');

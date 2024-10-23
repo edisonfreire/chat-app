@@ -43,6 +43,10 @@ if (mongoose.models && mongoose.models["chats"]) {
   mongoose.deleteModel("chats");
 }
 
+if (!mongoose.models["messages"]) {
+  require("./message-model");
+}
+
 const ChatModel = mongoose.model("chats", chatSchema);
 
 // fix the error where the message model is not found
