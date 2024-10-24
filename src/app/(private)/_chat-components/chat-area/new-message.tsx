@@ -9,7 +9,6 @@ import dayjs from 'dayjs'
 import EmojiPicker from 'emoji-picker-react'
 import ImageSelector from './image-selector'
 import { UploadImageToFirebaseAndReturnUrl } from '@/helpers/image-upload'
-import { read } from 'fs'
 
 function NewMessage() {
   const [text, setText] = useState('')
@@ -62,6 +61,7 @@ function NewMessage() {
       };
       SendNewMessage(dbPayload);
     } catch (error: any) {
+      console.log('Error sending message: ', error);
       message.error(error.message)
     } finally {
       setLoading(false);

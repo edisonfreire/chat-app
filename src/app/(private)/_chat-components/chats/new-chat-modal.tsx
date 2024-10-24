@@ -33,6 +33,7 @@ function NewChatModal(
       console.log(response);
       setUsers(response);
     } catch (error: any) {
+      console.log('Error getting users: ', error);
       message.error(error.message);
     } finally {
       setLoading(false);
@@ -53,6 +54,7 @@ function NewChatModal(
       dispatch(SetChats(response));
       setShowNewChatModal(false);
     } catch (error: any) {
+      console.log('Error adding to chat: ', error);
       message.error(error.message);
     } finally {
       setLoading(false);

@@ -25,6 +25,7 @@ function ChatsList() {
       if (response.error) throw new Error(response.error);
       dispatch(SetChats(response));
     } catch (error: any) {
+      console.log('Error getting chats: ', error);
       message.error(error.message);
     } finally {
       setLoading(false);

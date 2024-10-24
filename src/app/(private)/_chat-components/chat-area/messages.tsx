@@ -27,6 +27,7 @@ function Messages() {
       }
       setMessages(response);
     } catch (error: any) {
+      console.log('Error getting messages: ', error);
       message.error(error.message);
     } finally {
       setLoading(false);

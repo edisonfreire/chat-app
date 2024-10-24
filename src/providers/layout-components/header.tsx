@@ -23,6 +23,7 @@ function Header() {
       if (response.error) throw new Error(response.error);
       dispatch(SetCurrentUser(response as UserType));
     } catch (error: any) {
+      console.log('Error getting current user: ', error);
       message.error(error.message);
     }
   }

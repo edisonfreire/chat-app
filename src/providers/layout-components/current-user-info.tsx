@@ -42,6 +42,7 @@ function CurrentUserInfo({
       message.success('Logged out successfully');
       router.push('/sign-in');
     } catch (error: any) {
+      console.log('Error logging out: ', error);
       message.error(error.message);
     } finally {
       setLogOutLoading(false);
@@ -58,6 +59,7 @@ function CurrentUserInfo({
       message.success('Profile picture updated successfully');
       setShowCurrentUserInfo(false);
     } catch (error: any) {
+      console.log('Error updating profile picture: ', error);
       message.error(error.message);
     } finally {
       setUploadLoading(false);
