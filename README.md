@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Chat App
 
-## Getting Started
+[Link to the site](https://chat-app-topaz-nu.vercel.app/)
 
-First, run the development server:
+A real-time chat application built using Socket.io that enables instant messaging between users. The project features:
+### Core Functionality:
+- Secure user authentication via CLERK
+- Individual and group chat capabilities
+- Real-time message delivery
+- Access to a complete list of registered users
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### User Features:
+- Profile customization with profile pictures
+- Group creation and management
+- Unread message counter in chat list
+- Typing indicators
+- Message read receipts
+- Image sharing and emoji support
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Technical Architecture:
+- Socket.io implementation in a dedicated Express.js backend for real-time event handling
+- MongoDB database for persistent storage of messages, user data, and chat history
+- Frontend-backend communication through WebSocket events for instant updates
+- Ant Design components for a clean, responsive user interface
+- Real-time events include:
+  - Message delivery and status updates
+  - User typing notifications
+  - Online/offline status changes
+  - New message notifications
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The application combines persistent data storage with real-time communication capabilities. While Socket.io handles immediate message delivery and status updates, MongoDB ensures all chat history and user data is properly stored and retrievable. The separate backend architecture allows for efficient handling of WebSocket connections while maintaining a clean separation of concerns.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Backend
+[Backend](https://github.com/edisonfreire/chat-app-backend)
 
-## Learn More
+## Key Learning Outcomes:
+### Socket.io & Real-Time Architecture:
+- Deep dive into WebSocket communication, understanding the fundamental difference between traditional REST APIs (request-response cycle) and event-driven Socket.io architecture where real-time data flows through event emissions and listeners
+- Gained practical experience in managing real-time connections, handling disconnections, and implementing event-based communication patterns
 
-To learn more about Next.js, take a look at the following resources:
+### NextJS Features:
+- Leveraged Next.js server actions for database operations, eliminating the need for a separate REST API backend for MongoDB/Firestore interactions
+- Enhanced understanding of modern full-stack development patterns in Next.js
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Data Modeling & Relationships:
+- Developed complex data modeling skills through interconnected entities:
+  - Users linking to multiple chats and messages
+  - Messages referencing both senders and chat rooms
+  - Groups containing multiple users and messages
+  - Read receipts tracking user interactions with messages
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Deployment & DevOps:
+- Gained experience deploying and managing a separate Socket.io backend on Render
+- Learned to handle environment configurations and production deployments
