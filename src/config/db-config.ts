@@ -3,9 +3,9 @@ import mongoose from "mongoose";
 //  mongod --dbpath /usr/local/var/mongodb
 export const connectMongoDB = async () => {
   try {
-    await mongoose.connect('mongodb+srv://edisonfreire14:faXeK5hijgGJlvku@cluster0.4zc2s.mongodb.net/')
+    await mongoose.connect(process.env.MONGO_URL!);
     console.log("MongoDB connected");
   } catch (error) {
-    console.log('MongoDB connection error:', error);
+    console.log("MongoDB connection error", error);
   }
 }

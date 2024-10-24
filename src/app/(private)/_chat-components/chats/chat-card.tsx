@@ -34,8 +34,8 @@ function ChatCard({ chat }: { chat: ChatType }) {
   const isSelected = selectedChat?._id === chat._id;
 
   const unreadCounts = () => {
-    if (!chat?.unreadCounts ||
-      !chat?.unreadCounts[currentUserData?._id!] ||
+    if (!chat.unreadCounts ||
+      !chat.unreadCounts[currentUserData?._id!] ||
       chat._id === selectedChat?._id) return null;
 
     return (

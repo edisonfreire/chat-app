@@ -3,12 +3,12 @@
 import ChatModel from "@/models/chat-model";
 import MessageModel from "@/models/message-model";
 
+
 export const SendNewMessage = async (payload: {
   text?: string,
   image?: string,
   chat: string;
   sender: string;
-  readyBy?: string[];
 }) => {
   try {
     const newMessage = new MessageModel(payload);
@@ -29,7 +29,6 @@ export const SendNewMessage = async (payload: {
       unreadCounts: existingUnreadCounts,
       lastMessageAt: new Date().toISOString(), // mongodb date format
     });
-
     return { message: "Message sent successfully" };
   } catch (error: any) {
     return {
@@ -64,7 +63,7 @@ export const ReadAllMessages = async ({
       {
         chat: chatId,
         sender: { $ne: userId },
-        readBy: { $nin: [userId], }
+        readBy: { $nin: userId }
       },
       { $addToSet: { readBy: userId } }
     );
