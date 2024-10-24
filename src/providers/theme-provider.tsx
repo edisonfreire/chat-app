@@ -3,10 +3,11 @@ import React from 'react'
 import { ConfigProvider } from 'antd';
 
 const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+
+  // https://ant.design/docs/react/customize-theme
+  // overriding default antd styles
   return (
     <div>
-    // https://ant.design/docs/react/customize-theme
-      // overriding default antd styles
       <ConfigProvider
         theme={{
           // all components / global level
