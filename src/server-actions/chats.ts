@@ -1,7 +1,5 @@
 "use server";
 import ChatModel from "@/models/chat-model";
-import mongoose from "mongoose";
-import path from "path";
 
 export const CreateNewChat = async (payload: any) => {
   try {
@@ -73,6 +71,7 @@ export const UpdateChat = async ({ chatId, payload }: { chatId: string, payload:
       message: "Chat updated successfully"
     };
   } catch (error: any) {
+    console.log(error);
     return {
       error: error.message
     };

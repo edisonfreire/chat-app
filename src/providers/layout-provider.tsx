@@ -3,7 +3,7 @@ import React from 'react'
 import Header from './layout-components/header';
 import Content from './layout-components/content';
 
-const LayoutProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+function LayoutProvider({ children }: { children: React.ReactNode }) {
   return (
     <div>
       <Header />
@@ -11,7 +11,7 @@ const LayoutProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =
         {children}
       </Content>
     </div>
-  )
+  );
 }
 
 export default LayoutProvider;

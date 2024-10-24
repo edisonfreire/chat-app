@@ -47,6 +47,7 @@ function GroupForm({ users, initialData = null }: { users: UserType[], initialDa
       router.refresh(); // avoid cache issues
       router.push('/');
     } catch (error: any) {
+      console.log(error);
       message.error(error.message);
     } finally {
       setLoading(false);

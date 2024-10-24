@@ -7,7 +7,6 @@ connectMongoDB();
 
 export const GetCurrentUserFromMongoDB = async () => {
   try {
-
     const clerkUser = await currentUser();
     // check if the user is already in the database based on clerkUserId
     const mongoUser = await UserModel.findOne({ clerkUserId: clerkUser?.id });
@@ -18,7 +17,7 @@ export const GetCurrentUserFromMongoDB = async () => {
 
     let email = "";
     if (clerkUser?.emailAddresses) {
-      email = clerkUser?.emailAddresses[0]?.emailAddress;
+      email = clerkUser?.emailAddresses[0]?.emailAddress || '';
     }
 
     // if the user is not in the database, create a user in the database

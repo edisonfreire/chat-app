@@ -36,7 +36,7 @@ function CurrentUserInfo({
   const onLogout = async () => {
     try {
       setLogOutLoading(true);
-      socket.emit('logout', currentUserData?._id);
+      socket.emit('logout', currentUserData?._id!);
       await signOut();
       setShowCurrentUserInfo(false);
       message.success('Logged out successfully');

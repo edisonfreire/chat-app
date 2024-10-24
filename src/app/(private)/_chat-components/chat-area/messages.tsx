@@ -81,7 +81,7 @@ function Messages() {
 
     let unreadMessaegs = 0;
     let chat = chats.find((chat: any) => chat._id === selectedChat?._id);
-    if (chat) {
+    if (chat && chat.unreadCounts) {
       unreadMessaegs = chat.unreadCounts[currentUserData?._id!] || 0;
     }
 
