@@ -27,7 +27,7 @@ function ChatCard({ chat }: { chat: ChatType }) {
 
   if (chat?.lastMessage) {
     lastMessage = chat?.lastMessage.text;
-    lastMessageSenderName = chat?.lastMessage.sender._id === currentUserData?._id ? 'You: ' : chat?.lastMessage.sender.name.split(' ')[0] + ": ";
+    lastMessageSenderName = chat?.lastMessage?.sender._id === currentUserData?._id ? 'You: ' : chat?.lastMessage.sender.name.split(' ')[0] + ": ";
     lastMessageTime = formatDateTime(chat?.lastMessage.createdAt);
   }
 

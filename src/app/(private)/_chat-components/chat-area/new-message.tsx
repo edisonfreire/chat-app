@@ -9,7 +9,6 @@ import dayjs from 'dayjs'
 import EmojiPicker from 'emoji-picker-react'
 import ImageSelector from './image-selector'
 import { UploadImageToFirebaseAndReturnUrl } from '@/helpers/image-upload'
-import { read } from 'fs'
 
 function NewMessage() {
   const [text, setText] = useState('')
