@@ -5,37 +5,48 @@ import MessageModel from "@/models/message-model";
 
 
 export const SendNewMessage = async (payload: {
-  text?: string,
-  image?: string,
+  text?: string;
+  image?: string;
   chat: string;
   sender: string;
+  socketMessageId: string;
+  createdAt: string;
+  updatedAt: string;
+  readBy: string[];
 }) => {
   try {
     const newMessage = new MessageModel(payload);
     await newMessage.save();
 
     const existingChat = await ChatModel.findById(payload.chat);
-    const existingUnreadCounts = existingChat?.unreadCounts;
+    if (!existingChat) {
+      throw new Error('Chat not found');
+    }
 
-    existingChat?.users.forEach((user: any) => {
+    const existingUnreadCounts = existingChat.unreadCounts || {};
+
+    existingChat.users.forEach((user: any) => {
       const userIdInString = user.toString();
       if (userIdInString !== payload.sender) {
-        existingUnreadCounts[userIdInString] = (existingUnreadCounts[userIdInString] || 0) + 1;
+        existingUnreadCounts[userIdInString] =
+          (existingUnreadCounts[userIdInString] || 0) + 1;
       }
     });
 
     await ChatModel.findByIdAndUpdate(payload.chat, {
       lastMessage: newMessage._id,
       unreadCounts: existingUnreadCounts,
-      lastMessageAt: new Date().toISOString(), // mongodb date format
+      lastMessageAt: new Date().toISOString(),
     });
-    return { message: "Message sent successfully" };
+
+    // Populate the message before returning
+    const populatedMessage = await MessageModel.findById(newMessage._id).populate('sender');
+
+    return JSON.parse(JSON.stringify(populatedMessage));
   } catch (error: any) {
-    return {
-      error: error.message
-    };
+    return { error: error.message };
   }
-}
+};
 
 export const GetChatMessages = async (chatId: string) => {
   try {
@@ -52,31 +63,36 @@ export const GetChatMessages = async (chatId: string) => {
 
 export const ReadAllMessages = async ({
   chatId,
-  userId
+  userId,
 }: {
-  chatId: string,
-  userId: string
+  chatId: string;
+  userId: string;
 }) => {
   try {
-    // push user id to readBy array if it doesn't exist
+    // Push user ID to readBy array if it doesn't exist
     await MessageModel.updateMany(
       {
         chat: chatId,
         sender: { $ne: userId },
-        readBy: { $nin: userId }
+        readBy: { $nin: [userId] },
       },
       { $addToSet: { readBy: userId } }
     );
 
     const existingChat = await ChatModel.findById(chatId);
-    const existingUnreadCounts = existingChat?.unreadCounts;
-    const newUnreadCounts = { ...existingUnreadCounts, [userId]: 0 };
-    await ChatModel.findByIdAndUpdate(chatId, { unreadCounts: newUnreadCounts });
+    if (!existingChat) {
+      throw new Error('Chat not found');
+    }
 
-    return { message: "Messages marked as read" };
+    const existingUnreadCounts = existingChat.unreadCounts || {};
+    existingUnreadCounts[userId] = 0;
+
+    await ChatModel.findByIdAndUpdate(chatId, { unreadCounts: existingUnreadCounts });
+
+    return { message: 'Messages marked as read' };
   } catch (error: any) {
     return {
-      error: error.message
+      error: error.message,
     };
   }
-}
+};

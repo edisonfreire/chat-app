@@ -5,7 +5,7 @@ import { UserState } from '@/redux/userSlice';
 import { GetAllChats } from '@/server-actions/chats';
 import { ChatState, SetChats } from '@/redux/chatSlice';
 import ChatCard from './chat-card';
-import { MessageType } from '@/interfaces';
+import { ChatType, MessageType } from '@/interfaces';
 import socket from '@/config/socket-config';
 import store from '@/redux/store';
 
@@ -36,8 +36,8 @@ function ChatsList() {
   }, [currentUserData]);
 
   useEffect(() => {
-    socket.on('new-message-received', (newMessage: MessageType)=> {
-      let {chats} : ChatState = store.getState().chat;
+    socket.on('new-message-received', (newMessage: MessageType) => {
+      let { chats }: ChatState = store.getState().chat;
       let prevChats = [...chats];
       let chatIndex = prevChats.findIndex((chat) => chat._id === newMessage.chat._id);
 
@@ -47,11 +47,11 @@ function ChatsList() {
 
       if (chatToUpdate?.lastMessage?.socketMessageId === newMessage?.socketMessageId) return;
 
-      let chatToUpdateCopy = {...chatToUpdate};
+      let chatToUpdateCopy = { ...chatToUpdate };
       chatToUpdateCopy.lastMessage = newMessage;
       chatToUpdateCopy.updatedAt = newMessage.createdAt;
       prevChats[chatIndex] = chatToUpdateCopy;
-      chatToUpdateCopy.unreadCounts = {...chatToUpdateCopy.unreadCounts};
+      chatToUpdateCopy.unreadCounts = { ...chatToUpdateCopy.unreadCounts };
 
       if (newMessage.sender._id !== currentUserData?._id
         && selectedChat?._id !== newMessage.chat._id
@@ -63,7 +63,23 @@ function ChatsList() {
       prevChats = [prevChats[chatIndex], ...prevChats.filter((chat) => chat._id !== newMessage.chat._id)];
       dispatch(SetChats(prevChats));
     })
-  }, [selectedChat]);
+
+    socket.on('chat-created', (newChat: ChatType) => {
+      const { chats }: ChatState = store.getState().chat;
+
+      // Check if the chat already exists
+      const chatExists = chats.some((chat) => chat._id === newChat._id);
+      if (!chatExists) {
+        dispatch(SetChats([newChat, ...chats]));
+      }
+    });
+
+    // Cleanup listeners on unmount
+    return () => {
+      socket.off('new-message-received');
+      socket.off('chat-created');
+    };
+  }, [selectedChat, dispatch]);
 
   return (
     <div>
