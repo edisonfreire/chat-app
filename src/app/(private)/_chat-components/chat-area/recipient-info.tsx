@@ -37,7 +37,6 @@ function RecipientInfo({
     )
   }
 
-
   return (
     <Drawer
       open={showRecipientInfo}
