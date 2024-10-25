@@ -105,7 +105,7 @@ function NewChatModal(
                     <div className="flex gap-5 items-center">
                       <img src={user.profilePicture}
                         alt='avatar'
-                        className='w-10 h-10 rounded-full' />
+                        className='w-10 h-10 rounded-full object-cover' />
                       <span className='text-gray-500'>{user.name}</span>
                     </div>
                     <Button

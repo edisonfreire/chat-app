@@ -66,7 +66,7 @@ function ChatCard({ chat }: { chat: ChatType }) {
         <img
           src={chatImage}
           alt=''
-          className='w-10 h-10 rounded-full' />
+          className='w-10 h-10 rounded-full object-cover' />
         <div className='flex flex-col gap-1'>
           <span className='text-gray-700 text-sm flex gap-2 items-center'>
             {chatName}
