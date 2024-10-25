@@ -90,7 +90,7 @@ function RecepientCard() {
   return (
     <div className="flex justify-between py-3 px-5 border-0 border-b border-gray-200 border-solid bg-gray-400/5">
       <div className="flex gap-5 items-center">
-        <img src={chatImage} alt="" className="w-10 h-10 rounded-full" />
+        <img src={chatImage} alt="" className="w-10 h-10 rounded-full object-cover" />
         <div className="flex flex-col gap-1">
           <span
             className="text-gray-700 text-sm cursor-pointer"

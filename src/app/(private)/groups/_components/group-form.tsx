@@ -76,7 +76,7 @@ function GroupForm({ users, initialData = null }: { users: UserType[], initialDa
                   }
                 }}
               />
-              <img src={user.profilePicture} alt="avatar" className='w-10 h-10 rounded-full' />
+              <img src={user.profilePicture} alt="avatar" className='w-10 h-10 rounded-full object-cover' />
               <span
                 className='text-gray-500 text-sm'
               >

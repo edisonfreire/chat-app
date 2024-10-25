@@ -82,7 +82,7 @@ function CurrentUserInfo({
                   : currentUserData.profilePicture
               }
               alt="Profile Picture"
-              className='w-28 h-28 rounded-full'
+              className='w-28 h-28 rounded-full object-cover'
             />}
             <Upload
               beforeUpload={(file) => {
