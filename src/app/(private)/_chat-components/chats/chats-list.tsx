@@ -5,7 +5,7 @@ import { UserState } from '@/redux/userSlice';
 import { GetAllChats } from '@/server-actions/chats';
 import { ChatState, SetChats } from '@/redux/chatSlice';
 import ChatCard from './chat-card';
-import { MessageType } from '@/interfaces';
+import { ChatType, MessageType } from '@/interfaces';
 import socket from '@/config/socket-config';
 import store from '@/redux/store';
 
@@ -64,6 +64,22 @@ function ChatsList() {
       dispatch(SetChats(prevChats));
     })
   }, [selectedChat]);
+
+  useEffect(() => {
+    socket.on('chat-created', (newChat: ChatType) => {
+      const { chats }: ChatState = store.getState().chat;
+
+      // Check if the chat already exists
+      const chatExists = chats.some((chat) => chat._id === newChat._id);
+      if (!chatExists) {
+        dispatch(SetChats([newChat, ...chats]));
+      }
+    });
+
+    return () => {
+      socket.off('chat-created');
+    };
+  }, [dispatch]);
 
   return (
     <div>
