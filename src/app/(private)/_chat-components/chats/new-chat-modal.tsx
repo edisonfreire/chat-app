@@ -1,12 +1,13 @@
 import { UserType } from '@/interfaces';
 import { ChatState } from '@/redux/chatSlice';
 import { UserState } from '@/redux/userSlice';
-import { CreateNewChat } from '@/server-actions/chats';
+import { CreateNewChat, GetChatByUsers } from '@/server-actions/chats';
 import { GetAllUsers } from '@/server-actions/users';
 import { Button, Divider, message, Modal, Spin } from 'antd';
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { SetChats } from '@/redux/chatSlice';
+import socket from '@/config/socket-config';
 
 function NewChatModal(
   {
@@ -43,21 +44,51 @@ function NewChatModal(
     try {
       setSelectedUserId(userId);
       setLoading(true);
-      const response = await CreateNewChat({
-        users: [currentUserData?._id, userId],
-        createdBy: currentUserData?._id,
-        isGroupChat: false,
+  
+      // Step 1: Check if an existing chat between the two users already exists
+      const existingChat = await GetChatByUsers({
+        users: [currentUserData?._id!, userId],
       });
-      if (response.error) throw new Error(response.error);
-      message.success('Chat created successfully');
-      dispatch(SetChats(response));
+
+      console.log(existingChat);
+  
+      // Handle errors if the existing chat query fails
+      if (existingChat?.error) throw new Error(existingChat.error);
+  
+      if (existingChat) {
+        // If chat already exists, just close the modal and use existing chat
+        message.info("This chat already exists.");
+  
+        // Check if the chat is already in the list
+        const chatExists = chats.some((chat) => chat._id === existingChat._id);
+        if (!chatExists) {
+          dispatch(SetChats([...chats, existingChat])); // Ensure it appears in the list
+        }
+      } else {
+        // Create new chat if it doesn't exist
+        const newChat = await CreateNewChat({
+          users: [currentUserData?._id, userId],
+          createdBy: currentUserData?._id,
+          isGroupChat: false,
+        });
+
+        console.log('new chat',newChat);
+  
+        if (newChat.error) throw new Error(newChat.error);
+  
+        message.success("Chat created successfully");
+        dispatch(SetChats([...chats, newChat])); // Update local chat list
+        socket.emit("chat-created", newChat); // Notify other users about the new chat
+      }
+  
+      // Close the modal
       setShowNewChatModal(false);
     } catch (error: any) {
       message.error(error.message);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     getUsers();
