@@ -1,35 +1,22 @@
 "use server";
 import ChatModel from "@/models/chat-model";
+import mongoose from "mongoose";
+import path from "path";
 
 export const CreateNewChat = async (payload: any) => {
   try {
-    // Create the new chat
-    const newChat = await ChatModel.create(payload);
-
-    // Populate the new chat
-    const populatedChat = await ChatModel.findById(newChat._id)
-      .populate('users')
-      .populate('createdBy');
-
-    // Return the newly created chat
-    return JSON.parse(JSON.stringify(populatedChat));
+    await ChatModel.create(payload);
+    const newChats = await ChatModel.find({
+      users: {
+        $in: [payload.createdBy],
+      },
+    }).populate("users").sort({ updatedAt: -1 });
+    // sort by updatedAt to have the latest chat on top
+    return JSON.parse(JSON.stringify(newChats));
   } catch (error: any) {
-    // Handle duplicate key error
-    if (error.code === 11000 && error.keyPattern && error.keyPattern.userIds) {
-      // Fetch the existing chat
-      const existingChat = await ChatModel.findOne({
-        userIds: payload.users.sort().join('_'),
-      })
-        .populate('users')
-        .populate('createdBy');
-
-      // Return the existing chat
-      return JSON.parse(JSON.stringify(existingChat));
-    } else {
-      return {
-        error: error.message,
-      };
-    }
+    return {
+      error: error.message
+    };
   }
 };
 

@@ -7,7 +7,6 @@ import { Button, Divider, message, Modal, Spin } from 'antd';
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { SetChats } from '@/redux/chatSlice';
-import socket from '@/config/socket-config';
 
 function NewChatModal(
   {
@@ -44,28 +43,21 @@ function NewChatModal(
     try {
       setSelectedUserId(userId);
       setLoading(true);
-      const newChat = await CreateNewChat({
+      const response = await CreateNewChat({
         users: [currentUserData?._id, userId],
         createdBy: currentUserData?._id,
         isGroupChat: false,
       });
-      if (newChat.error) throw new Error(newChat.error);
+      if (response.error) throw new Error(response.error);
       message.success('Chat created successfully');
-
-      // Update the chats in the Redux store
-      dispatch(SetChats([newChat, ...chats]));
-
-      // Emit the 'chat-created' event
-      socket.emit('chat-created', newChat);
-
+      dispatch(SetChats(response));
       setShowNewChatModal(false);
     } catch (error: any) {
       message.error(error.message);
     } finally {
       setLoading(false);
     }
-  };
-
+  }
 
   useEffect(() => {
     getUsers();
@@ -105,7 +97,7 @@ function NewChatModal(
                     <div className="flex gap-5 items-center">
                       <img src={user.profilePicture}
                         alt='avatar'
-                        className='w-10 h-10 rounded-full object-cover' />
+                        className='w-10 h-10 rounded-full' />
                       <span className='text-gray-500'>{user.name}</span>
                     </div>
                     <Button

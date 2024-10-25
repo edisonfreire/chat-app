@@ -38,8 +38,8 @@ function Messages() {
   }, [selectedChat]);
 
   useEffect(() => {
-    // Listen for new messages
-    const handleNewMessage = (message: MessageType) => {
+    // listen for new messages
+    socket.on("new-message-received", (message: MessageType) => {
       if (selectedChat?._id === message.chat._id) {
         setMessages((prev) => {
           const isMessageAlreadyExists = prev.find(
@@ -48,102 +48,56 @@ function Messages() {
           if (isMessageAlreadyExists) return prev;
           else return [...prev, message];
         });
-
-        // Send read receipt for the new message
-        ReadAllMessages({
-          chatId: selectedChat?._id!,
-          userId: currentUserData?._id!,
-        });
-
-        socket.emit('read-all-messages', {
-          chatId: selectedChat?._id!,
-          readByUserId: currentUserData?._id!,
-          users: selectedChat?.users
-            .filter((user) => user._id !== currentUserData?._id)
-            .map((user) => user._id),
-        });
-
-        // Update unreadCounts in chats
-        const newChats = chats.map((chat: any) => {
-          if (chat._id === selectedChat?._id) {
-            let chatData = { ...chat };
-            chatData.unreadCounts = { ...chatData.unreadCounts };
-            chatData.unreadCounts[currentUserData?._id!] = 0;
-            return chatData;
-          } else return chat;
-        });
-
-        dispatch(SetChats(newChats));
       }
-    };
+    });
 
-    socket.on("new-message-received", handleNewMessage);
+    // listen for user-read-all-chat-messages event
+    socket.on(
+      "user-read-all-chat-messages",
+      ({ chatId, readByUserId }: { chatId: string; readByUserId: string }) => {
+        if (selectedChat?._id === chatId) {
+          setMessages((prev) => {
+            const newMessages = prev.map((msg) => {
+              if (
+                msg.sender._id !== readByUserId &&
+                !msg.readBy.includes(readByUserId)
+              ) {
+                return { ...msg, readBy: [...msg.readBy, readByUserId] };
+              }
+              return msg;
+            });
 
-    // Listen for user-read-all-chat-messages event
-    const handleUserReadAllMessages = ({
-      chatId,
-      readByUserId,
-    }: {
-      chatId: string;
-      readByUserId: string;
-    }) => {
-      if (selectedChat?._id === chatId) {
-        setMessages((prev) => {
-          const newMessages = prev.map((msg) => {
-            if (
-              msg.sender._id !== readByUserId &&
-              !msg.readBy.includes(readByUserId)
-            ) {
-              return { ...msg, readBy: [...msg.readBy, readByUserId] };
-            }
-            return msg;
+            return newMessages;
           });
-          return newMessages;
-        });
+        }
       }
-    };
-
-    socket.on("user-read-all-chat-messages", handleUserReadAllMessages);
-
-    // Clean up listeners when component unmounts or selectedChat changes
-    return () => {
-      socket.off("new-message-received", handleNewMessage);
-      socket.off("user-read-all-chat-messages", handleUserReadAllMessages);
-    };
+    );
   }, [selectedChat]);
 
   useEffect(() => {
-    // Scroll to bottom when messages change
     if (messagesDivRef.current) {
-      messagesDivRef.current.scrollTop =
-        messagesDivRef.current.scrollHeight + 100;
+      messagesDivRef.current.scrollTop = messagesDivRef.current.scrollHeight + 100;
     }
 
-    // Determine unread messages
-    let unreadMessages = 0;
+    let unreadMessaegs = 0;
     let chat = chats.find((chat: any) => chat._id === selectedChat?._id);
-    if (chat) {
-      const unreadCounts = chat.unreadCounts || {};
-      unreadMessages = unreadCounts[currentUserData?._id!] || 0;
+    if (chat && chat.unreadCounts) {
+      unreadMessaegs = chat?.unreadCounts[currentUserData?._id!] || 0;
     }
 
-    // If there are unread messages, mark them as read
-    if (unreadMessages > 0) {
+    if (unreadMessaegs > 0) {
       ReadAllMessages({
         chatId: selectedChat?._id!,
-        userId: currentUserData?._id!,
+        userId: currentUserData?._id!
       });
 
-      socket.emit("read-all-messages", {
+      socket.emit('read-all-messages', {
         chatId: selectedChat?._id!,
-        readByUserId: currentUserData?._id!,
-        users: selectedChat?.users
-          .filter((user) => user._id !== currentUserData?._id)
-          .map((user) => user._id),
+        readyByUserId: currentUserData?._id!,
+        users: selectedChat?.users.filter((user) => user._id !== currentUserData?._id).map((user) => user._id)
       });
     }
 
-    // Update unreadCounts in chats
     const newChats = chats.map((chat: any) => {
       if (chat._id === selectedChat?._id) {
         let chatData = { ...chat };
@@ -154,7 +108,7 @@ function Messages() {
     });
 
     dispatch(SetChats(newChats));
-  }, [messages, selectedChat]);
+  }, [messages]);
 
   return (
     <div className='flex-1 p-3 overflow-y-scroll'

@@ -45,7 +45,7 @@ function RecipientInfo({
       title={chatName}
     >
       <div className="flex flex-col justify-center items-center gap-5">
-        <img src={chatImage} alt="" className='w-28 h-28 rounded-full object-cover' />
+        <img src={chatImage} alt="" className='w-28 h-28 rounded-full' />
         <span className='text-gray-700'>{chatName}</span>
       </div>
 

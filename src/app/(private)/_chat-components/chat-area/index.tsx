@@ -12,7 +12,7 @@ function ChatArea() {
   if (!selectedChat) return (
     <div className='flex flex-1 flex-col justify-center items-center h-full'>
       <img src='/chat-logo.webp' alt="Chat Logo" className='h-60' />
-      <span className='font-semibold text-gray-600 text-sm object-cover'>
+      <span className='font-semibold text-gray-600 text-sm'>
         Select a chat to start messaging...
       </span>
     </div>
