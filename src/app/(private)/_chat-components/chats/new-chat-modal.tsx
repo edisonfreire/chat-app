@@ -7,6 +7,7 @@ import { Button, Divider, message, Modal, Spin } from 'antd';
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { SetChats } from '@/redux/chatSlice';
+import socket from '@/config/socket-config';
 
 function NewChatModal(
   {
@@ -43,21 +44,28 @@ function NewChatModal(
     try {
       setSelectedUserId(userId);
       setLoading(true);
-      const response = await CreateNewChat({
+      const newChat = await CreateNewChat({
         users: [currentUserData?._id, userId],
         createdBy: currentUserData?._id,
         isGroupChat: false,
       });
-      if (response.error) throw new Error(response.error);
+      if (newChat.error) throw new Error(newChat.error);
       message.success('Chat created successfully');
-      dispatch(SetChats(response));
+
+      // Update the chats in the Redux store
+      dispatch(SetChats([newChat, ...chats]));
+
+      // Emit the 'chat-created' event
+      socket.emit('chat-created', newChat);
+
       setShowNewChatModal(false);
     } catch (error: any) {
       message.error(error.message);
     } finally {
       setLoading(false);
     }
-  }
+  };
+
 
   useEffect(() => {
     getUsers();
